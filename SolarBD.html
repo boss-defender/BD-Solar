@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SolarSwap BD · সৌরশক্তি গণনা</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.tailwindcss.com" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{amber:{neon:'#FFB800'},eco:'#00E676'},fontFamily:{d:['Space Grotesk','Hind Siliguri','sans-serif'],b:['Hind Siliguri','Space Grotesk','sans-serif']}}}}</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+  :root{--ease:cubic-bezier(.22,1,.36,1)}
+  html{background-color:#05070D}
+  body{background:#070B14;min-height:100vh;color:#E8EDF7;font-family:'Hind Siliguri','Space Grotesk',sans-serif;overflow-x:hidden}
+  .fd{font-family:'Space Grotesk','Hind Siliguri',sans-serif}
+  html[lang=bn] .fd{font-family:'Hind Siliguri','Space Grotesk',sans-serif}
+  /* ===== Premium background ===== */
+  .x-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;isolation:isolate;contain:strict;background:linear-gradient(180deg,#04060C 0%,#0A1020 52%,#070B14 100%)}
+  .x-bg>*{position:absolute;pointer-events:none}
+  .x-au{border-radius:50%;filter:blur(80px);mix-blend-mode:screen;opacity:.35;will-change:transform}
+  .x-au1{width:110vmax;height:55vmax;top:-22vmax;left:-35vmax;background:conic-gradient(from 210deg,transparent 0 12%,#FFB800 28%,#FFD66B 40%,transparent 58%,#FFB800 80%,transparent 92%);animation:x-r1 34s ease-in-out infinite alternate}
+  .x-au2{width:100vmax;height:50vmax;bottom:-24vmax;right:-34vmax;background:conic-gradient(from 30deg,transparent 0 10%,#00E676 26%,#12C2E9 38%,transparent 55%,#00E676 78%,transparent 90%);animation:x-r2 42s ease-in-out infinite alternate}
+  .x-au3{width:70vmax;height:34vmax;top:38%;left:10%;opacity:.22;background:radial-gradient(closest-side,#FFD66B,rgba(18,194,233,.6) 55%,transparent);animation:x-r3 38s ease-in-out infinite alternate}
+  @keyframes x-r1{50%{transform:translate3d(14vw,10vh,0) rotate(22deg) scale(1.1)}100%{transform:translate3d(6vw,20vh,0) rotate(-12deg) scale(.95)}}
+  @keyframes x-r2{50%{transform:translate3d(-16vw,-8vh,0) rotate(-20deg) scale(1.08)}100%{transform:translate3d(-6vw,-22vh,0) rotate(14deg)}}
+  @keyframes x-r3{50%{transform:translate3d(-12vw,-14vh,0) rotate(30deg) scale(1.15)}100%{transform:translate3d(10vw,6vh,0) rotate(-18deg)}}
+  #x-sky{inset:0;width:100%;height:100%}
+  .x-sun{width:62vmax;height:62vmax;top:-26vmax;right:-22vmax;border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,170,.6),rgba(255,214,107,.28) 28%,rgba(255,184,0,.1) 55%,transparent);mix-blend-mode:screen;animation:x-br 8s ease-in-out infinite;will-change:transform,opacity}
+  .x-ring{border-radius:50%;border:1px solid rgba(255,214,107,.16);background:radial-gradient(closest-side,transparent 60%,rgba(255,214,107,.08));mix-blend-mode:screen;animation:x-rf 8s ease-in-out infinite}
+  .x-ring:nth-of-type(5){width:90px;height:90px;top:20vh;right:22vw}
+  .x-ring:nth-of-type(6){width:150px;height:150px;top:32vh;right:31vw;border-color:rgba(0,230,118,.1);animation-delay:-2s}
+  .x-ring:nth-of-type(7){width:36px;height:36px;top:46vh;right:40vw;background:rgba(255,214,107,.06);animation-delay:-4s}
+  @keyframes x-br{50%{transform:scale(1.08);opacity:.75}}
+  @keyframes x-rf{50%{opacity:.35}}
+  .x-floor{left:0;right:0;bottom:0;height:40vh;perspective:320px;perspective-origin:50% 0;opacity:.12;-webkit-mask:linear-gradient(to top,#000 10%,transparent 85%);mask:linear-gradient(to top,#000 10%,transparent 85%)}
+  .x-plane{position:absolute;left:-60%;width:220%;bottom:0;height:220%;transform-origin:50% 100%;transform:rotateX(72deg);overflow:hidden}
+  .x-lines{position:absolute;inset:-64px 0 0;background:repeating-linear-gradient(90deg,#FFB800 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,#FFB800 0 1px,transparent 1px 64px);animation:x-fl 3.5s linear infinite;will-change:transform}
+  @keyframes x-fl{to{transform:translateY(64px)}}
+  .x-sheen{inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,230,170,.06) 50%,transparent 62%);transform:translateX(-100%);animation:x-sw 12s ease-in-out infinite}
+  @keyframes x-sw{0%,70%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .x-au,.x-sun,.x-ring,.x-floor{transform:translateZ(0);contain:paint}.x-sheen{transform:translateX(-100%) translateZ(0);contain:paint}
+  .x-vig{inset:0;background:radial-gradient(ellipse 120% 90% at 50% 40%,transparent 50%,rgba(2,3,8,.7))}
+  section[id]{position:relative}
+  section[id]::after{content:'';position:absolute;inset:-10% 0;z-index:-1;pointer-events:none;background:radial-gradient(55% 45% at 30% 45%,rgba(255,184,0,.11),transparent 70%),radial-gradient(40% 40% at 78% 65%,rgba(0,230,118,.07),transparent 70%);opacity:.25;transform:scale(.94);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+  section[id]:nth-of-type(even)::after{background:radial-gradient(55% 45% at 70% 45%,rgba(0,230,118,.09),transparent 70%),radial-gradient(40% 40% at 22% 65%,rgba(255,214,107,.08),transparent 70%)}
+  section[id].x-lit::after{opacity:1;transform:none}
+  #drawer .x-close,#drawer .chip2,#chatSend,#drawer .rb{min-height:46px;min-width:46px}
+  #drawer .rb::before{top:calc(50% - 16px);left:calc(50% - 16px)}
+  #drawer>div:not(#msgs){flex-shrink:0}
+  @media (prefers-reduced-motion:reduce){.x-au,.x-sun,.x-ring,.x-lines,.x-sheen,.x-grain{animation:none!important}.x-sheen{display:none}section[id]::after{transition:none}}
+  .glass{background-color:rgba(15,22,38,.72);background-image:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;transition:box-shadow .3s,border-color .3s}
+  .glass:hover{box-shadow:0 0 32px rgba(255,184,0,.14);border-color:rgba(255,184,0,.3)}
+  .press{transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .2s,box-shadow .2s;cursor:pointer;user-select:none}
+  .press:hover{transform:scale(1.05)}
+  .press:active{transform:scale(.88)}
+  .seg{padding:.4rem .75rem;border-radius:999px;font-size:.85rem;white-space:nowrap;min-height:44px}
+  .seg.on{background:#FFB800;color:#05070D;font-weight:600;box-shadow:0 0 18px rgba(255,184,0,.5)}
+  .seg{background-color:#111725;color:#E8EDF7}
+  .big{width:48px;height:48px;border-radius:14px;font-size:1.6rem;line-height:1;background-color:#1C2333;color:#E8EDF7;border:1px solid rgba(255,255,255,.12)}
+  .big:hover{background-color:#3A2F12;box-shadow:0 0 16px rgba(255,184,0,.4)}
+  .sm{width:44px;height:44px;border-radius:12px;font-size:1.1rem;background-color:#1A2030;color:#E8EDF7;border:1px solid rgba(255,255,255,.1)}
+  .rb{position:relative;width:44px;height:44px;margin:-6px;border-radius:50%;display:inline-grid;place-items:center;flex-shrink:0;padding:0;color:#FFC933;background:transparent;border:0}
+  .rb::before{content:'';position:absolute;top:6px;left:6px;width:32px;height:32px;box-sizing:border-box;border-radius:50%;background-color:rgba(20,26,40,.5);background-image:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.02));backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);border:1.5px solid rgba(255,184,0,.85);box-shadow:0 0 8px rgba(255,184,0,.28),inset 0 1px 0 rgba(255,255,255,.12);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+  .rb:hover::before{box-shadow:0 0 14px rgba(255,184,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
+  .rb:focus-visible{outline:none}.rb:focus-visible::before{outline:2px solid #FFB800;outline-offset:3px}
+  .rb svg{position:relative;width:18px;height:18px;display:block;overflow:visible}
+  .rb .ic{display:none}
+  .lt{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;width:108px;min-height:44px;padding:3px;border-radius:999px;border:1px solid transparent;background:linear-gradient(rgba(15,22,38,.85),rgba(15,22,38,.85)) padding-box,linear-gradient(90deg,#FFB800,#00E676) border-box;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#E8EDF7;perspective:200px;cursor:pointer}
+  .lt:focus-visible{outline:2px solid #FFB800;outline-offset:3px}
+  .lt-k{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:linear-gradient(90deg,#FFB800,#00E676);box-shadow:0 0 14px rgba(255,184,0,.6),0 0 22px rgba(0,230,118,.35);transition:translate .42s cubic-bezier(.34,1.56,.64,1)}
+  .lt.bn .lt-k{translate:100% 0}
+  .lt.go .lt-k{animation:ltS .42s ease-in-out}
+  .lt.go .lt-k::after{content:'';position:absolute;inset:0;border-radius:inherit;background:inherit;filter:blur(8px);animation:ltT .42s ease-out forwards}
+  .lt-l{position:relative;z-index:1;display:grid;place-items:center;font:600 .85rem 'Space Grotesk','Hind Siliguri',sans-serif;border-radius:999px;background:transparent linear-gradient(90deg,#FFB800,#00E676) center/0 0 no-repeat;transition:color .1s .12s,background-color .12s,background-size .12s}
+  .lt-l{color:#E8EDF7;transition:none}
+  .lt.landed:not(.bn) [data-side=en],.lt.landed.bn [data-side=bn]{color:#0B1220;background-color:#FFB800;background-size:100% 100%;transition:none}
+  .x-mw{display:inline-block;white-space:pre;backface-visibility:hidden;transform-origin:50% 60%}
+  #hero h1 .x-mw{color:#FFC933;-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#FFB800,#FFD54A,#00E676,#FFD54A,#FFB800) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;padding-bottom:.08em}
+  .lt.go .lt-l{animation:ltF .42s cubic-bezier(.34,1.56,.64,1)}
+  .lt-s{position:absolute;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;pointer-events:none;z-index:2}
+  @keyframes ltS{50%{scale:1.35 1}}
+  @keyframes ltT{0%{opacity:.9;transform:translateX(var(--td,-60%))}100%{opacity:0;transform:none}}
+  @keyframes ltF{50%{transform:rotateX(90deg)}}
+  .x-wipe{position:fixed;inset:0;z-index:70;pointer-events:none;background:linear-gradient(120deg,transparent 30%,rgba(255,184,0,.35) 45%,rgba(0,230,118,.35) 55%,transparent 70%);transform:translateX(-100%)}
+  @media (prefers-reduced-motion:reduce){.lt-k{transition:none}.lt.go .lt-k,.lt.go .lt-k::after,.lt.go .lt-l{animation:none}}
+  .rb[data-state=idle] .ic-spk,.rb[data-state=playing] .ic-pause,.rb[data-state=paused] .ic-play{display:inline}
+  .rb[data-state=playing]::before{border-color:#FFB800;box-shadow:0 0 0 2px rgba(255,184,0,.45),0 0 12px rgba(255,184,0,.45)}
+  .rb .eq rect{fill:currentColor;transform-box:fill-box;transform-origin:bottom;animation:eqB .9s ease-in-out infinite}
+  .rb .eq rect:nth-child(2){animation-delay:-.35s}.rb .eq rect:nth-child(3){animation-delay:-.6s}
+  @keyframes eqB{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+  #toast:focus-visible{outline:2px solid #FFB800;outline-offset:3px}
+  .logo{filter:drop-shadow(0 0 10px #FFB800)}
+  .logo .rays,.rays{animation:spin 14s linear infinite}
+  .logo .rays{transform-origin:16px 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  input[type=range]{accent-color:#FFB800;width:100%;height:44px}
+  .od{display:inline-block;height:1.15em;line-height:1.15em;overflow:hidden;vertical-align:bottom}
+  .ods{display:flex;flex-direction:column;transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
+  .ods span{height:1.15em;display:block}
+  .tile .v{font-size:1.65rem;font-weight:700;line-height:1.15}
+  .sw{display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.9rem;min-height:44px}
+  .sw input{appearance:none;width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.15);position:relative;transition:background .25s;cursor:pointer}
+  .sw input::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+  .sw input:checked{background:#00E676}
+  .sw input:checked::after{transform:translateX(18px)}
+  .line{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.6s ease-out forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .badge{animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pop{from{transform:scale(.3);opacity:0}}
+  #toast{transition:opacity .3s,transform .4s cubic-bezier(.34,1.56,.64,1)}
+  .row{display:flex;justify-content:space-between;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.9rem}
+  .row small{font-size:12px}
+  #drawer .sm,#chatF button{flex-shrink:0;min-width:44px;min-height:44px}
+  .row:last-child{border-bottom:0}.row b{font-family:'Space Grotesk',sans-serif;color:#FFC933;white-space:nowrap;font-weight:600}
+  .inp{width:100%;min-height:44px;padding:.5rem .75rem;border-radius:12px;background:#0B1220;color:#E8EDF7;border:1px solid rgba(255,255,255,.15)}
+  .inp:focus{outline:2px solid #FFB800;outline-offset:1px}
+  #bhaiBtn{position:fixed;right:18px;bottom:18px;z-index:55;width:66px;height:66px;border-radius:50%;font-size:1.35rem;letter-spacing:-.15em;background:radial-gradient(circle at 35% 30%,#FFE08A,#FFB800 60%,#E08A00);box-shadow:0 0 24px rgba(255,184,0,.6);animation:glowP 2.4s ease-in-out infinite}
+  @keyframes glowP{50%{box-shadow:0 0 46px rgba(255,184,0,.95)}}
+  #drawer{position:fixed;top:12px;right:12px;bottom:12px;width:min(410px,calc(100% - 24px));z-index:60;display:flex;flex-direction:column;transform:translateX(115%);transition:transform .45s cubic-bezier(.34,1.3,.64,1);background-color:rgba(11,17,30,.9)}
+  #drawer.open{transform:none}
+  .mu{margin-left:auto;max-width:85%;background:#3A2F12;border:1px solid rgba(255,184,0,.35);border-radius:16px 16px 4px 16px;padding:.6rem .8rem}
+  .mb{max-width:92%;background:#151D2E;border:1px solid rgba(255,255,255,.1);border-radius:16px 16px 16px 4px;padding:.6rem .8rem;white-space:pre-wrap}
+  .dots span{display:inline-block;width:8px;height:8px;margin:0 2px;border-radius:50%;background:#FFB800;animation:bnc 1s infinite ease-in-out}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bnc{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-7px);opacity:1}}
+  .chip2{min-height:44px;padding:.35rem .8rem;border-radius:999px;font-size:.82rem;background:#151D2E;border:1px solid rgba(255,184,0,.35);color:#E8EDF7}
+  #chatSend{flex:0 0 48px;width:48px;min-width:48px!important;min-height:48px!important;padding:0;box-sizing:border-box}
+  #chatSend.is-busy{opacity:.45;cursor:not-allowed}
+  @media (prefers-reduced-motion:reduce){.orb,.rays,.line,#bhaiBtn,.dots span,.rb .eq rect{animation:none!important}.line{stroke-dashoffset:0}#drawer{transition:none}}
+  /* ===== cooler buttons ===== */
+  @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+  @keyframes xSpin{to{--a:360deg}}
+  @keyframes xRot{to{rotate:360deg}}
+  @keyframes xBob{50%{translate:0 -6px}}
+  @keyframes xRip{to{transform:scale(1);opacity:0}}
+  .btn-fx{position:relative;overflow:hidden;isolation:isolate}
+  .btn-fx:active{transform:scale(.94)}
+  .x-rip{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,0) 70%);transform:scale(0);opacity:.9;pointer-events:none;z-index:-1;animation:xRip .6s ease-out forwards}
+  .x-pri,.x-pill{background:#9BD43A linear-gradient(135deg,#FFB800,#9BD43A 55%,#00E676)!important;color:#05070D!important;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 6px rgba(0,0,0,.18),0 0 14px rgba(255,184,0,.55),0 0 28px rgba(0,230,118,.3)!important}
+  .x-pri:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 20px rgba(255,184,0,.75),0 0 38px rgba(0,230,118,.45)!important}
+  .x-pri::after,.x-pill::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);pointer-events:none}
+  .x-pri:hover::after,#types:hover .x-pill::after{transform:translateX(120%);transition:transform .7s var(--ease)}
+  #types{position:relative}
+  .x-pill{position:absolute;left:0;top:0;border-radius:999px;overflow:hidden;pointer-events:none;transition:transform .45s cubic-bezier(.34,1.56,.64,1),width .45s cubic-bezier(.34,1.56,.64,1)}
+  #types .seg{background:transparent;box-shadow:none;z-index:1;transition:color .25s,transform .35s cubic-bezier(.34,1.56,.64,1)}
+  #types .seg.on{color:#05070D;font-weight:600;background:#9BD43A linear-gradient(135deg,#FFB800,#9BD43A 55%,#00E676);animation:xFill .45s ease-in}
+  @keyframes xFill{from{background-color:transparent;background-image:none}}
+  .big{border-radius:50%;border:2px solid transparent;background:linear-gradient(#141B2B,#141B2B) padding-box,linear-gradient(135deg,#FFB800,#00E676) border-box;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+  .big[data-d="1"]:hover{background:linear-gradient(#10261C,#10261C) padding-box,linear-gradient(135deg,#FFB800,#00E676) border-box;box-shadow:0 0 18px rgba(0,230,118,.6)}
+  .big[data-d="-1"]:hover{background:linear-gradient(#2A2210,#2A2210) padding-box,linear-gradient(135deg,#FFB800,#00E676) border-box;box-shadow:0 0 18px rgba(255,184,0,.6)}
+  .x-ic{display:inline-block;transition:rotate .3s var(--ease)}
+  .big[data-d="1"]:active .x-ic{rotate:90deg}.big[data-d="-1"]:active .x-ic{rotate:-90deg}
+  .sm[data-act=h],.chip2{border-radius:999px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(rgba(22,30,48,.92),rgba(22,30,48,.92)) padding-box,linear-gradient(rgba(255,255,255,.14),rgba(255,255,255,.14)) border-box;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .25s var(--ease),box-shadow .25s}
+  .sm[data-act=h]{min-width:52px}
+  .sm[data-act=h]:hover,.chip2:hover{transform:translateY(-2px);border-color:transparent;background:linear-gradient(rgba(22,30,48,.95),rgba(22,30,48,.95)) padding-box,conic-gradient(from var(--a),#FFB800,#00E676,rgba(255,255,255,.08) 60%,#FFB800) border-box;box-shadow:0 6px 18px rgba(255,184,0,.25),0 0 14px rgba(0,230,118,.2);animation:xSpin 2.4s linear infinite}
+  .sm[data-act=h]:active,.chip2:active{transform:scale(.94)}
+  .sw input{flex-shrink:0;width:48px;height:28px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);box-shadow:inset 0 2px 4px rgba(0,0,0,.35);transition:background .3s,box-shadow .3s}
+  .sw input::after{top:4px;left:4px;width:18px;height:18px;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .sw input:checked{background:linear-gradient(90deg,#FFB800,#00E676);box-shadow:0 0 14px rgba(0,230,118,.45),inset 0 1px 0 rgba(255,255,255,.4)}
+  .sw input:checked::after{transform:translateX(20px);box-shadow:0 0 10px #fff,0 0 18px rgba(0,230,118,.8)}
+  .sw input:focus-visible{outline:2px solid #FFB800;outline-offset:3px}
+  #bhaiBtn{animation:glowP 2.4s ease-in-out infinite,xBob 3s ease-in-out infinite}
+  #bhaiBtn::before{content:'';position:absolute;inset:-7px;border-radius:50%;background:conic-gradient(#FFB800,#00E676,transparent 55%,#FFB800);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));animation:xRot 3s linear infinite;pointer-events:none}
+  [data-act=bhaiX]{border-radius:50%;transition:rotate .3s var(--ease),box-shadow .3s,border-color .3s}
+  [data-act=bhaiX]:hover{rotate:90deg;border-color:rgba(255,94,98,.7);box-shadow:0 0 16px rgba(255,94,98,.55),0 0 26px rgba(255,184,0,.3)}
+  .btn-fx:focus-visible,.press:focus-visible,.chip2:focus-visible,[data-act=bhaiX]:focus-visible,#bhaiBtn:focus-visible{outline:2px solid #FFB800;outline-offset:3px}
+  @media (prefers-reduced-motion:reduce){.btn-fx,.x-pill,.x-ic,.big,.sm,.chip2,.sw input,.sw input::after,[data-act=bhaiX]{transition:none!important;animation:none!important}#bhaiBtn::before,.x-rip{animation:none!important}.x-rip{display:none}.x-pri::after,.x-pill::after{display:none}.btn-fx:active,.sm:hover,.chip2:hover,.press:hover,.press:active{transform:none!important}[data-act=bhaiX]:hover,.x-ic{rotate:none!important}}
+  /* ===== Premium motion ===== */
+  .x-grain{position:fixed;inset:-50%;z-index:65;pointer-events:none;opacity:.035;animation:x-gr .8s steps(4) infinite;will-change:transform;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  @keyframes x-gr{25%{transform:translate3d(-6%,4%,0)}50%{transform:translate3d(5%,-7%,0)}75%{transform:translate3d(-3%,-4%,0)}}
+  .x-prog{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;pointer-events:none;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#FFB800,#FFD54A,#00E676);box-shadow:0 0 10px rgba(255,184,0,.7),0 0 18px rgba(0,230,118,.4)}
+  #hero h1{font-size:clamp(2.6rem,6vw,4.1rem);line-height:1.06;letter-spacing:-.02em;text-shadow:none;filter:drop-shadow(0 0 22px rgba(255,184,0,.28))}
+  #hero h1,#hero h1 .x-w{color:#FFC933;-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#FFB800,#FFD54A,#00E676,#FFD54A,#FFB800) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text}
+  #hero h1 .x-w{display:inline-block;padding-bottom:.08em}
+  section[id]:not(#hero){margin-top:3.5rem}
+  section[id]:not(#hero)::before{content:'';display:block;height:1px;margin-bottom:3rem;background:linear-gradient(90deg,transparent,rgba(255,184,0,.45),rgba(0,230,118,.35),transparent)}
+  section[id]:not(#hero) h2.fd{font-size:clamp(1.75rem,3.2vw,2.4rem);line-height:1.12;letter-spacing:-.02em}
+  section[id]:not(#hero) h2.fd::after{content:'';display:block;width:56px;height:3px;margin-top:.55rem;border-radius:3px;background:linear-gradient(90deg,#FFD54A,#FFB800);box-shadow:0 0 12px rgba(255,184,0,.55)}
+  @media (prefers-reduced-motion:no-preference){
+    #hero h1,#hero h1 .x-w{animation:x-grad 9s linear infinite}
+    #hero h1 .x-w{animation-delay:calc(var(--i)*-.5s)}
+    #hero h1.x-in .x-w{animation:x-word .8s cubic-bezier(.2,.8,.2,1) calc(.5s + var(--i)*.08s) backwards,x-grad 9s linear calc(var(--i)*-.5s) infinite}
+    .logo{animation:x-sun 1s cubic-bezier(.2,.8,.2,1) backwards}
+    .logo .rays{animation:spin 14s linear infinite,x-flare 1s cubic-bezier(.2,.8,.2,1) .25s backwards}
+    header.glass{animation:x-up .7s cubic-bezier(.2,.8,.2,1) .3s backwards}
+    #hero>div>p{animation:x-up .7s cubic-bezier(.2,.8,.2,1) .85s backwards}
+    #hero>div>.glass{animation:x-up .7s cubic-bezier(.2,.8,.2,1) .95s backwards}
+    #hero>.glass{animation:x-up .8s cubic-bezier(.2,.8,.2,1) .7s backwards}
+    .x-rv{opacity:0;translate:0 24px;scale:.98}
+    .x-rv.x-vis,section.x-rv{scale:none}
+    .x-rv.x-vis{opacity:1;translate:none}
+    :root .x-rv.x-rv{transition:opacity .8s cubic-bezier(.2,.7,.2,1) var(--rd,0s),translate .8s cubic-bezier(.2,.7,.2,1) var(--rd,0s),scale .8s cubic-bezier(.2,.7,.2,1) var(--rd,0s),box-shadow .3s,border-color .3s}
+  }
+  @keyframes x-grad{to{background-position:300% 0}}
+  @keyframes x-word{from{opacity:0;translate:0 .45em}}
+  @keyframes x-up{from{opacity:0;translate:0 24px}}
+  @keyframes x-sun{0%{opacity:0;translate:0 14px;scale:.4}60%{opacity:1;translate:0 0;scale:1.25}100%{scale:1}}
+  @keyframes x-flare{0%{opacity:0;scale:.2}60%{opacity:1;scale:1.55}100%{scale:1}}
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+    section .glass:not(.press){position:relative;transition:transform .55s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s}
+    section .glass.x-on{transition:transform .12s var(--ease),box-shadow .3s,border-color .3s}
+    section .glass:not(.press)::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(255,200,80,.16),transparent 60%);opacity:0;transition:opacity .45s}
+    section .glass.x-on::after{opacity:1}
+  }
+  @media (prefers-reduced-motion:reduce){.x-prog{display:none}}
+  /* ===== Solar Bhai: premium close + genie drawer ===== */
+  #drawer{transition:none}
+  #drawer:not(.open){visibility:hidden}
+  #drawer.x-anim{will-change:transform,opacity,clip-path}
+  #drawer.x-anim>*{will-change:opacity,translate}
+  .x-streak{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:inherit;pointer-events:none}
+  .x-streak>i{position:absolute;top:-25%;bottom:-25%;left:0;width:45%;background:linear-gradient(100deg,transparent 0%,rgba(255,184,0,.14) 30%,rgba(255,226,150,.42) 50%,rgba(255,184,0,.14) 70%,transparent 100%);mix-blend-mode:screen;transform:translateX(-130%) skewX(-18deg)}
+  #drawer .x-close{position:relative;flex-shrink:0;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:scale .3s cubic-bezier(.34,1.56,.64,1)}
+  #drawer .x-close::before{content:'';position:absolute;inset:2px;border-radius:50%;padding:1px;background:conic-gradient(#FFB800,#00E676,rgba(255,255,255,.06) 55%,#FFB800);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:xRot 4s linear infinite;pointer-events:none}
+  #drawer .x-close::after{content:'';position:absolute;inset:3px;border-radius:50%;background:radial-gradient(circle at 50% 30%,rgba(255,200,80,.18),rgba(22,30,48,.82) 72%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 0 10px rgba(255,184,0,.28),inset 0 1px 0 rgba(255,255,255,.12);transition:box-shadow .3s;pointer-events:none}
+  #drawer .x-close svg{position:relative;z-index:1;width:16px;height:16px;filter:drop-shadow(0 0 3px rgba(255,184,0,.5));transition:rotate .35s cubic-bezier(.34,1.56,.64,1),filter .3s}
+  #drawer .x-close .x-s1{stop-color:#FFE08A;transition:stop-color .3s}
+  #drawer .x-close .x-s2{stop-color:#E0A000;transition:stop-color .3s}
+  #drawer .x-close:hover{rotate:none;scale:1.08;box-shadow:none}
+  #drawer .x-close:hover svg{rotate:90deg;filter:drop-shadow(0 0 5px rgba(255,94,98,.8)) drop-shadow(0 0 9px rgba(255,184,0,.45))}
+  #drawer .x-close:hover .x-s1{stop-color:#FFB347}
+  #drawer .x-close:hover .x-s2{stop-color:#FF5E62}
+  #drawer .x-close:hover::after{box-shadow:inset 0 0 14px rgba(255,94,98,.35),inset 0 1px 0 rgba(255,255,255,.14)}
+  #drawer .x-close:active{scale:.9}
+  #drawer .x-close:focus-visible{outline:2px solid #FFB800;outline-offset:1px}
+  .x-burst{position:fixed;z-index:56;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;pointer-events:none;border:2px solid #FFB800;box-shadow:0 0 18px rgba(255,184,0,.8),0 0 32px rgba(0,230,118,.5),inset 0 0 12px rgba(0,230,118,.5)}
+  .x-spark{position:fixed;z-index:56;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;pointer-events:none;background:#FFD54A;box-shadow:0 0 6px #FFB800,0 0 10px rgba(255,184,0,.6)}
+  .x-spark.x-g{background:#7DFFB5;box-shadow:0 0 6px #00E676,0 0 10px rgba(0,230,118,.6)}
+  @media (prefers-reduced-motion:reduce){#drawer .x-close::before{animation:none}#drawer .x-close,#drawer .x-close svg{transition:none}#drawer .x-close:hover svg{rotate:none}#drawer .x-close:hover,#drawer .x-close:active{scale:none}}
+  @property --x-ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+  .x-skyf{position:relative;border-radius:28px;padding:1.5px;background:conic-gradient(from var(--x-ang),#FFB800,#FFD54F,#00E676,#FFD54F,#FFB800);animation:x-ang 9s linear infinite;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+  @keyframes x-ang{to{--x-ang:360deg}}
+  .x-skyi{position:relative;border-radius:26.5px;padding:6px;background:rgba(11,17,30,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
+
+  .x-skyi::after{content:'';position:absolute;inset:6px;border-radius:21px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 8px 28px rgba(0,0,0,.35);background:linear-gradient(170deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 14%,transparent 26%)}
+  /* Solar Core scene */
+  .x-sc{position:relative;aspect-ratio:400/220;border-radius:21px;overflow:hidden;contain:paint;--x-sun:0;--x-d:calc(3.2s - var(--x-sun)*1.9s)}
+  .x-sc>svg{position:absolute;inset:0;width:100%;height:100%}
+  .x-bl,.x-cw,.x-co,.x-tk,.x-orb,.x-bat{transform-box:fill-box;transform-origin:center}
+  .x-d1{animation:x-dr 70s linear infinite alternate}.x-d2{animation:x-dr 36s linear infinite alternate}
+  @keyframes x-dr{to{transform:translateX(-26px)}}
+  .x-hexb{animation:x-hs 10s ease-in-out infinite}
+  @keyframes x-hs{from{transform:translateX(-160px)}to{transform:translateX(480px)}}
+  .x-bl{opacity:calc(.12 + var(--x-sun)*.88);transform:scale(calc(.45 + var(--x-sun)*.75));transition:opacity .6s,transform .6s}
+  .x-cw{opacity:calc(.25 + var(--x-sun)*.75);transform:scale(calc(.7 + var(--x-sun)*.45));transition:opacity .6s,transform .6s}
+  .x-co{animation:x-pu 4s ease-in-out infinite}.x-co+.x-co{animation-duration:5.5s;animation-delay:-2s}
+  @keyframes x-pu{50%{transform:scale(1.12);opacity:.6}}
+  .x-tk{animation:x-rot 60s linear infinite}.x-orb{animation:x-rot 12s linear infinite reverse}
+  @keyframes x-rot{to{transform:rotate(360deg)}}
+  .x-hot{opacity:calc(.1 + var(--x-sun)*.9);transition:opacity .6s}
+  .x-bms,.x-pts{opacity:min(1,calc(var(--x-sun)*3));transition:opacity .6s}
+  .x-gd{stroke:rgba(255,200,90,.14);stroke-width:.6}
+  .x-bm{stroke:#FFD27A;stroke-width:1.4;stroke-linecap:round;opacity:0;animation:x-bm var(--x-d) linear infinite;animation-delay:calc(var(--x-d)*var(--o))}
+  @keyframes x-bm{0%{transform:translateX(0);opacity:0}8%{opacity:1}88%{transform:translateX(var(--l));opacity:1}100%{transform:translateX(var(--l));opacity:0}}
+  .x-pt{fill:#00E676;opacity:0;animation:x-pt calc(var(--x-d)*.8) linear infinite;animation-delay:calc(var(--x-d)*.8*var(--o))}
+  @keyframes x-pt{0%{transform:translateX(0);opacity:0}15%,80%{opacity:1}100%{transform:translateX(var(--l));opacity:0}}
+  .x-bf{transition:stroke-dashoffset .6s var(--ease)}
+  .x-sc.is-night .x-bat{animation:x-bp 3.2s ease-in-out infinite}
+  @keyframes x-bp{50%{opacity:.6;transform:scale(1.05)}}
+  .x-sc.is-night .x-bm,.x-sc.is-night .x-pt,.x-sc.is-night .x-pnl i::after{animation:none;opacity:0}
+  .x-pw{position:absolute;left:47%;top:22%;width:31%;perspective:520px}
+  .x-pnl{position:relative;aspect-ratio:4/3;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:3%;padding:4%;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,rgba(40,70,160,.6),rgba(90,60,180,.5) 50%,rgba(20,90,170,.55));border:1px solid rgba(180,210,255,.35);box-shadow:0 0 calc(6px + var(--x-sun)*22px) rgba(120,150,255,.35),0 14px 30px rgba(0,0,0,.5);transform:translateY(0) rotateX(24deg) rotateY(-26deg) rotateZ(4deg);animation:x-bob 6s ease-in-out infinite}
+  @keyframes x-bob{50%{transform:translateY(-6px) rotateX(24deg) rotateY(-26deg) rotateZ(4deg)}}
+  .x-pnl::before,.x-pnl::after{content:'';position:absolute;pointer-events:none}
+  .x-pnl::before{inset:0;background:linear-gradient(115deg,transparent 15%,rgba(120,220,255,.2) 38%,rgba(200,120,255,.2) 55%,transparent 78%)}
+  .x-pnl::after{top:-20%;bottom:-20%;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);opacity:calc(.25 + var(--x-sun)*.75);transform:translateX(-150%) skewX(-20deg);animation:x-sw 5s ease-in-out infinite}
+  @keyframes x-sw{60%,100%{transform:translateX(450%) skewX(-20deg)}}
+  .x-pnl i{position:relative;border-radius:2px;background:linear-gradient(160deg,#2B4FB8,#1A2A6E 55%,#3B2A8C);box-shadow:inset 0 0 0 1px rgba(160,200,255,.25)}
+  .x-pnl i::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle,#FFE9A8,rgba(255,184,0,.45) 60%,transparent);opacity:0}
+  .x-pnl i[style]::after{animation:x-fl var(--x-d) linear infinite;animation-delay:calc(var(--x-d)*var(--o))}
+  @keyframes x-fl{0%,84%{opacity:0}90%{opacity:calc(.3 + var(--x-sun)*.7)}100%{opacity:0}}
+  .x-hud{position:absolute;top:5%;right:4%;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(15,22,40,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);font:500 12px/1.3 'Space Grotesk','Hind Siliguri',sans-serif;color:#fff;white-space:nowrap}
+  .x-hd{width:6px;height:6px;border-radius:50%;background:#FFB800;box-shadow:0 0 6px #FFB800}
+  .x-sc.is-night .x-hd{background:#00E676;box-shadow:0 0 6px #00E676}
+  .x-skyf.x-off,.x-skyf.x-off *,.x-skyf.x-off *::before,.x-skyf.x-off *::after{animation-play-state:paused!important}
+  @media (prefers-reduced-motion:reduce){.x-skyf,.x-sc *,.x-sc *::before,.x-sc *::after{animation:none!important}.x-bm,.x-pt{opacity:0!important}}
+</style>
+</head>
+<body>
+<div class="x-prog" aria-hidden="true"></div><div class="x-grain" aria-hidden="true"></div>
+<div class="x-bg" aria-hidden="true"><div class="x-au x-au1"></div><div class="x-au x-au2"></div><div class="x-au x-au3"></div><canvas id="x-sky"></canvas><div class="x-sun"></div><div class="x-ring"></div><div class="x-ring"></div><div class="x-ring"></div><div class="x-floor"><div class="x-plane"><div class="x-lines"></div></div></div><div class="x-sheen"></div><div class="x-vig"></div></div>
+<div class="relative z-10 max-w-6xl mx-auto px-4 pb-10">
+
+  <!-- TOP BAR -->
+  <header class="glass sticky top-3 z-20 mt-3 px-4 py-3 flex flex-wrap items-center gap-3 justify-between">
+    <div class="flex items-center gap-2">
+      <svg class="logo" width="34" height="34" viewBox="0 0 32 32" aria-hidden="true">
+        <g class="rays" stroke="#FFB800" stroke-width="2" stroke-linecap="round">
+          <line x1="16" y1="1" x2="16" y2="5"/><line x1="16" y1="27" x2="16" y2="31"/><line x1="1" y1="16" x2="5" y2="16"/><line x1="27" y1="16" x2="31" y2="16"/>
+          <line x1="5.4" y1="5.4" x2="8.2" y2="8.2"/><line x1="23.8" y1="23.8" x2="26.6" y2="26.6"/><line x1="5.4" y1="26.6" x2="8.2" y2="23.8"/><line x1="23.8" y1="8.2" x2="26.6" y2="5.4"/>
+        </g><circle cx="16" cy="16" r="7" fill="#FFB800"/>
+      </svg>
+      <div><div class="fd font-bold text-lg leading-none">SolarSwap <span class="text-[#00E676]">BD</span></div><div class="text-xs text-white/60">সৌরশক্তি গণনা</div></div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="glass !rounded-full p-1 flex" role="group" id="types">
+        <i class="x-pill" aria-hidden="true"></i>
+        <button class="seg press btn-fx" data-act="type" data-k="household">🏠 <span data-i18n="household"></span></button>
+        <button class="seg press btn-fx" data-act="type" data-k="flat">🏢 <span data-i18n="flat"></span></button>
+        <button class="seg press btn-fx" data-act="type" data-k="factory">🏭 <span data-i18n="factory"></span></button>
+      </div>
+      <button class="lt landed" data-act="lang" id="langBtn" aria-label="Switch language / ভাষা বদলান"><i class="lt-k"></i><span class="lt-l" data-side="en">EN</span><span class="lt-l" data-side="bn">বাং</span></button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="hero" class="grid md:grid-cols-2 gap-6 items-center mt-8">
+    <div>
+      <div class="flex items-start gap-3">
+        <h1 class="fd text-4xl md:text-5xl font-bold leading-tight text-[#FFC933] [text-shadow:0_0_24px_rgba(255,184,0,.35)]" data-i18n="heroH"></h1>
+      </div>
+      <p class="text-white/70 mt-3" data-i18n="heroSub"></p>
+      <div class="glass p-4 mt-5">
+        <div class="flex justify-between text-sm"><label for="sunR" data-i18n="avgHours"></label><b class="fd text-[#FFB800]" id="sunV"></b></div>
+        <input id="sunR" type="range" min="1" max="24" value="6" />
+        <p class="text-xs text-white/50" data-i18n="sliderNote"></p>
+      </div>
+    </div>
+    <div class="x-skyf"><div class="x-skyi">
+      <div class="x-sc" id="xSc" role="img" aria-label="Solar core feeding a panel and battery">
+        <svg viewBox="0 0 400 220" aria-hidden="true">
+          <defs>
+            <radialGradient id="xBg" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#121D3A"/><stop offset=".55" stop-color="#080D1C"/><stop offset="1" stop-color="#03050B"/></radialGradient>
+            <pattern id="xHex" width="17.32" height="30" patternUnits="userSpaceOnUse"><path d="M8.66 0L17.32 5V15L8.66 20L0 15V5ZM8.66 20V30" fill="none" stroke="#fff" stroke-width=".5"/></pattern>
+            <mask id="xHexM"><rect width="400" height="220" fill="url(#xHex)"/></mask>
+            <linearGradient id="xBand"><stop offset="0" stop-color="#8FB4FF" stop-opacity="0"/><stop offset=".5" stop-color="#8FB4FF" stop-opacity=".45"/><stop offset="1" stop-color="#8FB4FF" stop-opacity="0"/></linearGradient>
+            <radialGradient id="xBloom"><stop offset="0" stop-color="#FFE08A" stop-opacity=".6"/><stop offset=".4" stop-color="#FFB800" stop-opacity=".2"/><stop offset="1" stop-color="#FFB800" stop-opacity="0"/></radialGradient>
+            <radialGradient id="xCor"><stop offset=".35" stop-color="#FFD54F" stop-opacity=".55"/><stop offset="1" stop-color="#FF8A00" stop-opacity="0"/></radialGradient>
+            <radialGradient id="xCore"><stop offset="0" stop-color="#FFFBE6"/><stop offset=".55" stop-color="#FFC233"/><stop offset="1" stop-color="#FF8A00"/></radialGradient>
+            <radialGradient id="xEm"><stop offset="0" stop-color="#FF8A4C"/><stop offset=".6" stop-color="#B8370F"/><stop offset="1" stop-color="#5A1406"/></radialGradient>
+          </defs>
+          <rect width="400" height="220" fill="url(#xBg)"/>
+          <g mask="url(#xHexM)"><rect width="400" height="220" fill="#4A6FB5" opacity=".1"/><rect class="x-hexb" width="140" height="220" fill="url(#xBand)"/></g>
+          <g class="x-d1" fill="#fff" opacity=".45" id="xDust1"></g>
+          <g class="x-d2" fill="#fff" opacity=".8" id="xDust2"></g>
+          <g class="x-bms" id="xBeams"></g>
+          <g transform="translate(84 72)">
+            <circle class="x-bl" r="72" fill="url(#xBloom)"/>
+            <g class="x-cw"><circle class="x-co" r="32" fill="url(#xCor)"/><circle class="x-co" r="24" fill="url(#xCor)"/></g>
+            <g class="x-tk" id="xTicks" stroke="#FFD27A" stroke-opacity=".55" stroke-width=".8" stroke-linecap="round"></g>
+            <g transform="rotate(-25) scale(1 .42)"><g class="x-orb"><circle r="50" fill="none" stroke="rgba(255,200,90,.4)" stroke-width="1"/><g fill="#FFF1B8"><circle cx="50" r="2.6"/><circle cx="-25" cy="43.3" r="2.6"/><circle cx="-25" cy="-43.3" r="2.6"/></g></g></g>
+            <circle r="15" fill="url(#xEm)"/>
+            <circle class="x-hot" r="15" fill="url(#xCore)"/>
+          </g>
+          <g class="x-pts" id="xStream"></g>
+          <g transform="translate(352 172)"><g class="x-bat">
+            <circle r="23" fill="rgba(0,230,118,.07)"/>
+            <circle r="28" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="5"/>
+            <circle class="x-bf" id="xBat" r="28" fill="none" stroke="#00E676" stroke-width="5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90)"/>
+            <text id="xKwh" y="3" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="Space Grotesk,sans-serif">0</text>
+            <text y="13" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="7" font-family="Space Grotesk,sans-serif">kWh/day</text>
+          </g></g>
+        </svg>
+        <div class="x-pw" aria-hidden="true"><div class="x-pnl" id="xPnl"></div></div>
+        <div class="x-hud" aria-hidden="true"><span class="x-hd"></span><span id="xHud"></span></div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- APPLIANCES -->
+  <section id="apps" class="mt-12">
+    <div class="flex items-center gap-3"><h2 class="fd text-2xl font-bold" data-i18n="appsH"></h2></div>
+    <p class="text-white/60 text-sm mt-1" data-i18n="appsSub"></p>
+    <div id="appGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="mt-12">
+    <div class="flex items-center gap-3 flex-wrap"><h2 class="fd text-2xl font-bold" data-i18n="resH"></h2>
+      <span id="deal" class="badge hidden px-3 py-1 rounded-full bg-[#00E676] text-[#05070D] font-bold text-sm shadow-[0_0_20px_#00E676]" data-i18n="deal"></span></div>
+    <div class="flex flex-wrap gap-x-6 mt-2">
+      <label class="sw"><input type="checkbox" id="mkt" data-act="tog" /><span data-i18n="market"></span></label>
+      <label class="sw"><input type="checkbox" id="leg" data-act="tog" /><span data-i18n="legacy"></span></label>
+    </div>
+    <div class="glass p-4 mt-2">
+      <div class="flex justify-between text-sm gap-3"><label for="sizeR" data-i18n="sizeL"></label><b class="fd text-[#FFB800]" id="sizeV"></b></div>
+      <input id="sizeR" type="range" min="50" max="150" step="5" value="100" />
+      <p class="text-xs text-white/70" id="nmLine"></p>
+    </div>
+    <p class="text-sm text-white/60 mt-3" id="useLine"></p>
+    <button class="seg on press mt-3 btn-fx x-pri" data-act="askRes">😎 <span data-i18n="askBhai"></span></button>
+    <div class="grid lg:grid-cols-3 gap-4 mt-4">
+      <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4" id="tiles"></div>
+      <div class="glass p-4 flex flex-col items-center">
+        <div class="text-sm text-white/60" data-i18n="gaugeH"></div>
+        <svg viewBox="0 0 200 140" class="w-full max-w-xs" role="img" aria-label="Payback gauge">
+          <g id="gArcs" fill="none" stroke-width="14"></g>
+          <g id="gTicks" fill="rgba(255,255,255,.55)" font-size="9" text-anchor="middle" class="fd"></g>
+          <g id="needle"><line x1="100" y1="100" x2="100" y2="38" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>
+          <circle cx="100" cy="100" r="6" fill="#fff"/>
+          <text id="gTxt" x="100" y="130" text-anchor="middle" font-size="20" font-weight="700" fill="#fff" class="fd"></text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHART -->
+  <section id="chart" class="mt-12">
+    <div class="flex items-center gap-3"><h2 class="fd text-2xl font-bold" data-i18n="chartH"></h2></div>
+    <div class="glass p-4 mt-4">
+      <div class="flex flex-wrap gap-4 text-sm mb-2">
+        <span class="flex items-center gap-2"><i class="w-4 h-1 rounded bg-[#FF5E62] inline-block"></i><span data-i18n="gridLine"></span></span>
+        <span class="flex items-center gap-2"><i class="w-4 h-1 rounded bg-[#00E676] inline-block"></i><span data-i18n="solarLine"></span></span>
+        <span class="flex items-center gap-2 text-white/70"><i class="w-4 h-0 border-t border-dashed border-white/50 inline-block"></i><span data-i18n="nmNote"></span></span>
+      </div>
+      <svg viewBox="0 0 600 260" class="w-full" id="lc" role="img" aria-label="20-year cost comparison"></svg>
+      <div class="grid grid-cols-2 gap-4 mt-3">
+        <div class="glass p-4"><div class="text-sm text-white/60" data-i18n="net20"></div><div class="fd text-2xl font-bold text-[#00E676]" id="net20"></div></div>
+        <div class="glass p-4"><div class="text-sm text-white/60" data-i18n="co2"></div><div class="fd text-2xl font-bold text-[#FFB800]" id="co2"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKET SNAPSHOT -->
+  <section id="market" class="mt-12">
+    <div class="flex items-center gap-3 flex-wrap"><h2 class="fd text-2xl font-bold" data-i18n="mktH"></h2>
+      <span id="liveTag" class="px-3 py-1 rounded-full text-xs border border-white/25 text-white/80">Snapshot · Oct 2026</span></div>
+    <p class="text-white/60 text-sm mt-1" data-i18n="mktSub"></p>
+    <div class="glass p-4 mt-4 flex flex-wrap items-center justify-between gap-4">
+      <p class="text-sm text-white/80 max-w-md" data-i18n="cdL"></p>
+      <div class="flex gap-5 fd" aria-live="off">
+        <div class="text-center"><b id="cdD" class="text-3xl text-[#FFB800]"></b><div class="text-xs text-white/60" data-i18n="dd"></div></div>
+        <div class="text-center"><b id="cdH" class="text-3xl text-[#FFB800]"></b><div class="text-xs text-white/60" data-i18n="hh"></div></div>
+        <div class="text-center"><b id="cdM" class="text-3xl text-[#FFB800]"></b><div class="text-xs text-white/60" data-i18n="mm"></div></div>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+      <div class="glass p-4"><h3 class="fd font-semibold mb-1" data-i18n="pnH"></h3>
+        <div class="row"><span>All panels, per watt <small class="block text-white/60">Tier-1 Jinko / Trina / JA / Longi at the top end</small></span><b>৳18–40/W</b></div>
+        <div class="row"><span>Tier-1 <small class="block text-white/60">Another survey</small></span><b>৳40–50/W</b></div>
+        <div class="row"><span>Budget <small class="block text-white/60">Same survey</small></span><b>৳27–36/W</b></div>
+        <div class="row"><span>BERC average retail tariff <small class="block text-white/60">June 2026</small></span><b>৳10.40/unit</b></div>
+      </div>
+      <div class="glass p-4"><h3 class="fd font-semibold mb-1" data-i18n="invH"></h3>
+        <div class="row"><span>Huawei SUN2000 <small class="text-white/60">grid-tie</small></span><b>৳7,000–9,000/kW</b></div>
+        <div class="row"><span>Sungrow <small class="text-white/60">grid-tie</small></span><b>৳6,000–8,000/kW</b></div>
+        <div class="row"><span>Growatt MOD/MAX <small class="text-white/60">grid-tie</small></span><b>৳5,000–6,800/kW</b></div>
+        <div class="row"><span>Growatt SPF 3500 ES <small class="text-white/60">hybrid 3 kW</small></span><b>৳80,750</b></div>
+        <div class="row"><span>Solis 3 kW <small class="text-white/60">hybrid</small></span><b>৳96,000</b></div>
+      </div>
+      <div class="glass p-4"><h3 class="fd font-semibold mb-1" data-i18n="sysH"></h3>
+        <div class="row"><span>1 kW on-grid, no battery</span><b>৳75,000–1,05,000</b></div>
+        <div class="row"><span>5 kW grid-tie</span><b>৳3,25,000–4,10,000</b></div>
+        <div class="row"><span>5 kW hybrid + 10 kWh lithium</span><b>৳6,00,000–7,50,000</b></div>
+      </div>
+      <div class="glass p-4"><h3 class="fd font-semibold mb-1" data-i18n="nmH"></h3>
+        <div class="row"><span>Surplus buyback <small class="block text-white/60">Systems installed by 28 Feb 2027, paid for 3 years until 28 Feb 2030</small></span><b>৳10.50/unit</b></div>
+        <ul class="text-sm text-white/80 list-disc pl-5 space-y-1 mt-2">
+          <li>Power Division gazette, 1 Sep 2026</li>
+          <li>Paid by bank or mobile financial service, never cash</li>
+          <li>Equipment must meet BSTI and SREDA standards</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-4 text-sm">
+      <a class="seg glass press inline-flex items-center !rounded-full" href="https://ebill.info.bd/tariff" target="_blank" rel="noopener">BERC tariff ↗</a>
+      <a class="seg glass press inline-flex items-center !rounded-full" href="https://www.tbsnews.net/bangladesh/energy/solar-producers-get-tk1050-unit-under-new-rooftop-incentive-scheme-1530446" target="_blank" rel="noopener">TBS: ৳10.50 net metering ↗</a>
+      <a class="seg glass press inline-flex items-center !rounded-full" href="https://solqis.com/solar-panel-price-bangladesh" target="_blank" rel="noopener">Solqis panel prices ↗</a>
+    </div>
+  </section>
+
+  <footer class="mt-12 text-center text-sm text-white/50">
+    <p data-i18n="foot1"></p><p class="mt-1" data-i18n="foot2"></p>
+  </footer>
+</div>
+<button id="bhaiBtn" class="press" data-act="bhai" aria-label="Open Solar Bhai chat" aria-controls="drawer">😎☀️</button>
+<aside id="drawer" class="glass" role="dialog" aria-label="Solar Bhai chat" aria-hidden="true">
+  <div class="p-4 pb-3 border-b border-white/10">
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0"><div class="fd font-bold text-lg">😎 Solar Bhai <span class="text-[#FFC933]">(সৌর ভাই)</span></div><div class="text-xs text-white/60" id="bhaiMode"></div></div>
+      <button class="x-close" data-act="bhaiX" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><defs><linearGradient id="xCloseG" x1="2" y1="2" x2="14" y2="14" gradientUnits="userSpaceOnUse"><stop class="x-s1" offset="0"/><stop class="x-s2" offset="1"/></linearGradient></defs><g fill="none" stroke="url(#xCloseG)" stroke-width="2" stroke-linecap="round"><line x1="3.5" y1="3.5" x2="12.5" y2="12.5"/><line x1="12.5" y1="3.5" x2="3.5" y2="12.5"/></g></svg></button>
+    </div>
+  </div>
+  <details class="px-4 py-1 border-b border-white/10">
+    <summary class="cursor-pointer text-sm min-h-[44px] flex items-center gap-2">⚙️ <span data-i18n="settings"></span></summary>
+    <label for="apiKey" class="text-xs text-white/70">OpenRouter API key</label>
+    <input id="apiKey" class="inp mt-1" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-…" />
+    <p class="text-xs text-[#00E676] mt-1" data-i18n="keyNote"></p>
+    <label for="model" class="text-xs text-white/70 block mt-2" data-i18n="modelL"></label>
+    <select id="model" class="inp mt-1 mb-3">
+      <option>qwen/qwen3.8-27b:free</option><option>nvidia/nemotron-3-super-120b-a12b:free</option><option>google/gemma-4-31b-it:free</option><option>google/gemini-2.5-flash</option><option>openrouter/free</option>
+    </select>
+  </details>
+  <div id="msgs" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm" aria-live="polite"></div>
+  <div class="px-4 flex flex-wrap gap-2">
+    <button class="chip2 press" data-act="chip">আমার কত টাকা বাঁচবে?</button>
+    <button class="chip2 press" data-act="chip">ব্যাটারি লাগবে?</button>
+    <button class="chip2 press" data-act="chip">Which inverter brand?</button>
+    <button class="chip2 press" data-act="chip">নেট মিটারিং কীভাবে পাব?</button>
+  </div>
+  <div id="chatF" class="p-4 flex gap-2"><input id="chatIn" class="inp" autocomplete="off" aria-label="Message" /><button type="button" id="chatSend" class="seg on press !rounded-xl btn-fx x-pri" aria-label="Send">➤</button></div>
+</aside>
+<div id="toast" class="fixed left-1/2 bottom-6 -translate-x-1/2 z-[70] glass !bg-[#0B1220]/90 px-4 py-3 max-w-sm text-sm opacity-0 pointer-events-none"></div>
+
+<script>
+/* ===== 1. i18n DICTIONARY ===== */
+const I18N={
+  en:{household:'Household',flat:'Flat',factory:'Factory',heroH:'Swap your bill for sunshine.',heroSub:'Pick your appliances and see the rooftop solar system, cost, savings and payback for Bangladesh.',
+    avgHours:'Average hours per day',sliderNote:'Moves the sun and sets hours for every appliance except the fridge.',h:'h',hpd:'Hours/day',
+    appsH:'Your appliances',appsSub:'Tap − / + to set how many you use and for how long.',led:'LED Light',fan:'Ceiling Fan',tv:'TV',fridge:'Refrigerator',ac:'1.5 Ton AC',pump:'Water Pump',
+    resH:'Your solar results',deal:'🎉 Super deal!',market:'Market price (৳90,000/kWp)',legacy:'Legacy slabs',
+    sDaily:'Daily use (kWh)',sKwp:'Solar size (kWp)',sPanels:'Panels (585 W)',sCost:'System cost',sSave:'Monthly savings',sPb:'Payback (years)',
+    gaugeH:'Payback period',years:'Years',chartH:'20 years: grid vs solar',gridLine:'Grid bills (cumulative)',solarLine:'With solar (system + remaining bills)',
+    breakeven:'Break-even',yr:'Yr',net20:'20-year net savings',co2:'CO₂ avoided (20 years)',t:'t',
+    use:(m,b,tar)=>`Monthly use ${m} kWh · Grid bill now ${b}/month · ${tar}`,tarRes:'BERC LT-A telescopic + 5% VAT',tarLeg:'Legacy slabs + 5% VAT',tarFac:'LT-C1 off-peak ৳11.45 + 5% VAT',
+    lakh:'L',crore:'Cr',foot1:'Estimates only. Rates: BERC June 2026.',foot2:'Made for Bangladesh 🇧🇩',
+    sizeL:'System size (% of recommended kWp)',nmOn:(s,b)=>`Surplus ${s} kWh/month sold back at ৳10.50/unit → +${b}/month added to savings (net metering)`,nmOff:'No surplus at this size: every solar unit is used at home.',
+    nmNote:'Buyback ৳10.50/unit years 1–3, then ৳8.00 (after Feb 2030, assumed)',nmAfter:'৳8.00 · after Feb 2030, assumed',askBhai:'Ask Solar Bhai about my result',
+    mktH:'Bangladesh solar market · Snapshot Oct 2026',mktSub:'Prices and rules to check an installer quote against.',cdL:'Time left to install and lock in ৳10.50/unit (28 Feb 2027, 23:59 Dhaka time)',dd:'days',hh:'hours',mm:'minutes',
+    pnH:'Panels & tariff',invH:'Inverters',sysH:'Installed systems',nmH:'Net metering rules',settings:'Settings',keyNote:'Your key stays in this tab only',modelL:'Model',ph:'Ask about your solar…',
+    online:m=>'Online · '+m,offMode:'Offline mode · add an OpenRouter key in Settings for AI answers',hello:'Assalamu alaikum! I am Solar Bhai 😎☀️ Ask me anything about your result.',resQ:'Explain my result: size, cost, payback, and what I should do next.'},
+  bn:{household:'বাসাবাড়ি',flat:'ফ্ল্যাট',factory:'কারখানা',heroH:'বিদ্যুৎ বিলের বদলে সূর্যের আলো।',heroSub:'আপনার যন্ত্রগুলো বেছে নিন, দেখুন ছাদের সোলার সিস্টেমের আকার, খরচ, সাশ্রয় ও খরচ উঠে আসার সময়।',
+    avgHours:'দিনে গড় ঘণ্টা',sliderNote:'সূর্য সরে যায় এবং ফ্রিজ ছাড়া সব যন্ত্রের ঘণ্টা ঠিক হয়।',h:'ঘ',hpd:'ঘণ্টা/দিন',
+    appsH:'আপনার যন্ত্রপাতি',appsSub:'− / + চেপে কয়টি এবং কত ঘণ্টা চলে তা ঠিক করুন।',led:'এলইডি বাতি',fan:'সিলিং ফ্যান',tv:'টিভি',fridge:'ফ্রিজ',ac:'১.৫ টন এসি',pump:'পানির পাম্প',
+    resH:'আপনার সোলার ফলাফল',deal:'🎉 দারুণ ডিল!',market:'বাজার দর (৳৯০,০০০/কিলোওয়াট)',legacy:'পুরনো স্ল্যাব',
+    sDaily:'দৈনিক ব্যবহার (kWh)',sKwp:'সোলার আকার (kWp)',sPanels:'প্যানেল (৫৮৫ W)',sCost:'সিস্টেম খরচ',sSave:'মাসিক সাশ্রয়',sPb:'খরচ উঠবে (বছর)',
+    gaugeH:'খরচ উঠে আসার সময়',years:'বছর',chartH:'২০ বছর: গ্রিড বনাম সোলার',gridLine:'গ্রিড বিল (মোট)',solarLine:'সোলারসহ (সিস্টেম + বাকি বিল)',
+    breakeven:'সমান বিন্দু',yr:'বছর',net20:'২০ বছরে নিট সাশ্রয়',co2:'CO₂ কমানো (২০ বছর)',t:'টন',
+    use:(m,b,tar)=>`মাসিক ব্যবহার ${m} kWh · এখনকার গ্রিড বিল ${b}/মাস · ${tar}`,tarRes:'বিইআরসি এলটি-এ ধাপভিত্তিক + ৫% ভ্যাট',tarLeg:'পুরনো স্ল্যাব + ৫% ভ্যাট',tarFac:'এলটি-সি১ অফ-পিক ৳১১.৪৫ + ৫% ভ্যাট',
+    lakh:' লাখ',crore:' কোটি',foot1:'শুধুমাত্র আনুমানিক হিসাব। রেট: বিইআরসি জুন ২০২৬।',foot2:'বাংলাদেশের জন্য তৈরি 🇧🇩',
+    sizeL:'সিস্টেমের আকার (প্রস্তাবিত kWp-এর %)',nmOn:(s,b)=>`মাসে বাড়তি ${s} kWh গ্রিডে বিক্রি, ৳১০.৫০/ইউনিট → সাশ্রয়ে মাসে +${b} যোগ (নেট মিটারিং)`,nmOff:'এই আকারে বাড়তি বিদ্যুৎ নেই: সব সৌর ইউনিট ঘরেই খরচ হয়।',
+    nmNote:'বাইব্যাক ১–৩ বছর ৳১০.৫০/ইউনিট, তারপর ৳৮.০০ (ফেব্রুয়ারি ২০৩০-এর পর, অনুমান)',nmAfter:'৳৮.০০ · ফেব্রু ২০৩০-এর পর, অনুমান',askBhai:'আমার ফলাফল নিয়ে সৌর ভাইকে জিজ্ঞেস করুন',
+    mktH:'বাংলাদেশের সোলার বাজার · অক্টোবর ২০২৬',mktSub:'ইনস্টলারের কোটেশন যাচাই করার দাম ও নিয়ম।',cdL:'৳১০.৫০/ইউনিট পেতে বসানোর বাকি সময় (২৮ ফেব্রুয়ারি ২০২৭, রাত ১১:৫৯, ঢাকা)',dd:'দিন',hh:'ঘণ্টা',mm:'মিনিট',
+    pnH:'প্যানেল ও ট্যারিফ',invH:'ইনভার্টার',sysH:'বসানো সিস্টেমের দাম',nmH:'নেট মিটারিং নিয়ম',settings:'সেটিংস',keyNote:'আপনার কী শুধু এই ট্যাবেই থাকে (Your key stays in this tab only)',modelL:'মডেল',ph:'সোলার নিয়ে প্রশ্ন করুন…',
+    online:m=>'অনলাইন · '+m,offMode:'অফলাইন মোড · AI উত্তরের জন্য সেটিংসে OpenRouter কী দিন',hello:'আসসালামু আলাইকুম! আমি সৌর ভাই 😎☀️ আপনার ফলাফল নিয়ে যা খুশি জিজ্ঞেস করুন।',resQ:'আমার ফলাফল বুঝিয়ে বলো: কত kWp, কত খরচ, কবে টাকা উঠবে, আর এখন কী করব?'}
+};
+const BN_D='০১২৩৪৫৬৭৮৯';
+const S={lang:'en',type:'household',market:false,legacy:false,sunH:6,size:100,live:false,qty:{},hrs:{}};
+const t=k=>I18N[S.lang][k];
+const dig=s=>S.lang==='bn'?String(s).replace(/\d/g,d=>BN_D[d]):String(s);
+const nf=(n,d=0)=>Number(n).toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money=n=>'৳'+nf(Math.round(n));
+const short=v=>v>=1e7?(v/1e7).toFixed(1)+t('crore'):v>=1e5?(v/1e5).toFixed(1)+t('lakh'):Math.round(v/1000)+'k';
+
+/* ===== 2. CALC ENGINE ===== */
+const APPS=[{k:'led',w:20,h:6},{k:'fan',w:75,h:10},{k:'tv',w:100,h:5,ic:'📺'},{k:'fridge',w:200,h:24,ic:'🧊'},{k:'ac',w:1500,h:8,ic:'❄️'},{k:'pump',w:750,h:1,ic:'🚰'}];
+const PRESETS={household:{led:4,fan:2,tv:1},flat:{led:8,fan:4,tv:1,fridge:1,ac:1},factory:{led:60,fan:40,tv:2,fridge:4,ac:10,pump:4}};
+const C={psh:4.5,pr:.78,panelW:585,costStd:70000,costMkt:90000,vat:1.05,lifeline:4.63,
+  slabs:[75,200,300,400,600,Infinity],rates:[5.26,8.50,9.10,9.62,15.01,17.35],legacy:[5.26,7.20,7.59,8.02,12.67,14.61],
+  factory:11.45,deg:.005,esc:.05,co2:.67,years:20,nm1:10.5,nm2:8};
+APPS.forEach(a=>S.hrs[a.k]=a.h);
+function bill(u){
+  if(u<=0)return 0;
+  if(S.type==='factory')return u*C.factory*C.vat;
+  if(u<=50)return u*C.lifeline*C.vat;
+  const r=S.legacy?C.legacy:C.rates;let s=0,p=0;
+  C.slabs.forEach((lim,i)=>{if(u>p)s+=(Math.min(u,lim)-p)*r[i];p=lim});
+  return s*C.vat;
+}
+function calc(){
+  const daily=APPS.reduce((s,a)=>s+a.w*(S.qty[a.k]||0)*S.hrs[a.k],0)/1000;
+  const monthly=daily*30, rec=daily/(C.psh*C.pr), kwp=rec*S.size/100, panels=Math.ceil(kwp*1000/C.panelW);
+  const cost=kwp*(S.market?C.costMkt:C.costStd), solarM=kwp*C.psh*C.pr*30;
+  const surplus=Math.max(0,solarM-monthly), buy=surplus*C.nm1;
+  const billNow=bill(monthly), save=billNow-bill(Math.max(0,monthly-solarM))+buy, annual=save*12;
+  const pb=annual>0?cost/annual:Infinity;
+  const g=[0],s=[cost];let co2kwh=0;
+  for(let y=1;y<=C.years;y++){
+    const e=Math.pow(1+C.esc,y-1),sm=solarM*Math.pow(1-C.deg,y-1),sur=Math.max(0,sm-monthly);
+    g.push(g[y-1]+12*bill(monthly)*e);
+    s.push(s[y-1]+12*bill(Math.max(0,monthly-sm))*e-12*sur*(y<=3?C.nm1:C.nm2));
+    co2kwh+=12*sm;
+  }
+  let be=null;
+  for(let i=1;i<g.length;i++)if(g[i]>=s[i]&&s[i-1]>g[i-1]){const d0=s[i-1]-g[i-1],d1=s[i]-g[i],f=d0/(d0-d1);be={x:i-1+f,y:g[i-1]+(g[i]-g[i-1])*f};break}
+  return{daily,monthly,rec,kwp,panels,cost,solarM,surplus,buy,billNow,save,annual,pb,g,s,be,net:g[C.years]-s[C.years],co2:co2kwh*C.co2/1000};
+}
+
+/* ===== 3. RENDER FUNCTIONS ===== */
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+/* Solar Core scene: built once, then driven by renderSky() through --x-sun */
+const XB=[[0,0],[1,1],[2,0],[3,1],[1,2]];
+const XPH={en:['Night, battery mode','Dawn','Morning sun','Peak sun','Afternoon sun','Golden hour'],bn:['রাত, ব্যাটারি মোড','ভোর','সকালের রোদ','সর্বোচ্চ রোদ','বিকেলের রোদ','গোধূলি']};
+function renderSkyStatic(){
+  const R=n=>{const s=Math.sin(n*12.9898)*43758.5453;return s-Math.floor(s)},f1=v=>v.toFixed(1);
+  let d1='',d2='';for(let i=0;i<46;i++)d1+=`<circle cx="${f1(R(i+1)*430)}" cy="${f1(R(i+99)*220)}" r="${(.3+R(i+7)*.5).toFixed(2)}"/>`;
+  for(let i=0;i<18;i++)d2+=`<circle cx="${f1(R(i+300)*430)}" cy="${f1(R(i+400)*220)}" r="${(.7+R(i+500)*.6).toFixed(2)}"/>`;
+  $('xDust1').innerHTML=d1;$('xDust2').innerHTML=d2;
+  let tk='';for(let i=0;i<48;i++){const a=i*Math.PI/24,r0=i%4?37:34.5,c=Math.cos(a),s=Math.sin(a);tk+=`<line x1="${(c*r0).toFixed(2)}" y1="${(s*r0).toFixed(2)}" x2="${(c*39.5).toFixed(2)}" y2="${(s*39.5).toFixed(2)}"/>`}
+  $('xTicks').innerHTML=tk;
+  const ray=(x0,y0,x1,y1,gap,end,inner)=>{const dx=x1-x0,dy=y1-y0,D=Math.hypot(dx,dy);return`<g transform="translate(${f1(x0+dx/D*gap)} ${f1(y0+dy/D*gap)}) rotate(${f1(Math.atan2(dy,dx)*180/Math.PI)})">${inner(f1(D-gap-end))}</g>`};
+  const cells=Array(12).fill('<i></i>');let bm='';
+  XB.forEach(([c,r],k)=>{const o=(-k/XB.length).toFixed(2);cells[r*4+c]=`<i style="--o:${o}"></i>`;
+    bm+=ray(84,72,250+(c-1.5)*25.9,95+(r-1)*26,18,0,L=>`<line class="x-gd" x2="${L}"/><line class="x-bm" x1="-14" x2="0" style="--l:${L}px;--o:${o}"/>`)});
+  $('xBeams').innerHTML=bm;$('xPnl').innerHTML=cells.join('');
+  $('xStream').innerHTML=ray(258,146,352,172,0,31,L=>`<line x2="${L}" stroke="rgba(0,230,118,.18)" stroke-width=".8"/>`+[0,1,2,3,4,5].map(i=>`<circle class="x-pt" r="1.7" style="--l:${L}px;--o:${(-i/6).toFixed(2)}"/>`).join(''));
+  const fr=document.querySelector('.x-skyf');let vis=true;const set=()=>fr.classList.toggle('x-off',!vis||document.hidden);
+  if('IntersectionObserver' in window)new IntersectionObserver(e=>{vis=e[e.length-1].isIntersecting;set()}).observe(fr);
+  document.addEventListener('visibilitychange',set);
+}
+function renderSky(){
+  const H=S.sunH%24,x=Math.max(0,Math.sin(Math.PI*(H-5.5)/13.5)),night=H<6||H>=19,sc=$('xSc');
+  sc.style.setProperty('--x-sun',x.toFixed(3));sc.classList.toggle('is-night',night);
+  $('xBat').style.strokeDashoffset=(86-x*80).toFixed(1);
+  const lb=dig(String(H).padStart(2,'0')+':00')+' · '+XPH[S.lang==='bn'?'bn':'en'][night?0:H<7?1:H<10?2:H<15?3:H<17?4:5];
+  $('xHud').textContent=lb;sc.setAttribute('aria-label',lb);
+  $('sunV').textContent=dig(S.sunH)+' '+t('h');
+}
+function appIcon(a){
+  if(a.k==='led')return`<svg viewBox="0 0 48 48" class="w-12 h-12" id="ic-led"><circle id="bulb" cx="24" cy="20" r="12" fill="#FFB800"/><rect x="18" y="32" width="12" height="8" rx="2" fill="#8892A6"/></svg>`;
+  if(a.k==='fan')return`<svg viewBox="0 0 48 48" class="w-12 h-12"><g id="blades" fill="#CFE3FF">${[0,120,240].map(r=>`<ellipse cx="24" cy="11" rx="5" ry="11" transform="rotate(${r} 24 24)"/>`).join('')}</g><circle cx="24" cy="24" r="5" fill="#FFB800"/></svg>`;
+  return`<span class="text-4xl">${a.ic}</span>`;
+}
+function renderApps(){
+  $('appGrid').innerHTML=APPS.map(a=>`<div class="glass p-4">
+    <div class="flex items-center gap-3"><div class="w-14 h-14 rounded-2xl bg-[#1A2030] grid place-items-center">${appIcon(a)}</div>
+      <div><div class="font-semibold text-lg">${t(a.k)}</div><div class="fd text-xs text-white/50">${dig(a.w)} W</div></div></div>
+    <div class="flex items-center justify-between mt-4">
+      <button class="big press btn-fx" data-act="q" data-k="${a.k}" data-d="-1" aria-label="−"><span class="x-ic">−</span></button>
+      <span class="fd text-3xl font-bold text-[#FFB800]" id="q-${a.k}"></span>
+      <button class="big press btn-fx" data-act="q" data-k="${a.k}" data-d="1" aria-label="+"><span class="x-ic">+</span></button></div>
+    <div class="flex items-center justify-between mt-3 text-sm text-white/70"><span>${t('hpd')}</span>
+      <span class="flex items-center gap-2"><button class="sm press btn-fx" data-act="h" data-k="${a.k}" data-d="-1" aria-label="−">−</button>
+      <b class="fd w-10 text-center" id="h-${a.k}"></b><button class="sm press btn-fx" data-act="h" data-k="${a.k}" data-d="1" aria-label="+">+</button></span></div></div>`).join('');
+  updateApps();
+}
+function updateApps(){
+  APPS.forEach(a=>{$('q-'+a.k).textContent=dig(S.qty[a.k]||0);$('h-'+a.k).textContent=dig(S.hrs[a.k])+t('h')});
+  const g=Math.min(1,(S.qty.led||0)/8),b=$('bulb');
+  b.style.opacity=.2+.8*g;b.style.filter=`drop-shadow(0 0 ${g*16}px #FFB800)`;
+}
+function odo(el,str){
+  const sig=str.replace(/\d/g,'#')+S.lang,ds=(S.lang==='bn'?BN_D:'0123456789').split('');
+  if(el._sig!==sig){el._sig=sig;el.innerHTML=[...str].map(c=>/\d/.test(c)?`<span class="od"><span class="ods">${ds.map(d=>`<span>${d}</span>`).join('')}</span></span>`:`<span>${c}</span>`).join('')}
+  const strips=el.querySelectorAll('.ods'),nums=str.replace(/\D/g,'');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>strips.forEach((s,i)=>s.style.transform=`translateY(-${nums[i]*10}%)`)));
+}
+const TILES=[['sDaily',r=>nf(r.daily,1)],['sKwp',r=>nf(r.kwp,2)],['sPanels',r=>nf(r.panels)],['sCost',r=>money(r.cost)],['sSave',r=>money(r.save)],['sPb',r=>isFinite(r.pb)?nf(r.pb,1):'—']];
+function renderTiles(){$('tiles').innerHTML=TILES.map(([k],i)=>`<div class="glass tile p-4"><div class="text-xs text-white/60">${t(k)}</div><div class="v fd mt-1 ${i===4?'text-[#00E676]':i===5?'text-[#FFB800]':''}" id="tile${i}"></div></div>`).join('')}
+function updateTiles(r){TILES.forEach(([,f],i)=>{const el=$('tile'+i);el._sig=el._sig||'';odo(el,f(r))})}
+const G={cx:100,cy:100,r:80,max:15,cur:0,vel:0,target:0};
+const gp=v=>{const a=Math.PI*(1-v/G.max);return[G.cx+G.r*Math.cos(a),G.cy-G.r*Math.sin(a)]};
+function renderGaugeStatic(){
+  $('gArcs').innerHTML=[[0,5,'#00E676'],[5,8,'#FFB800'],[8,15,'#FF5E62']].map(([a,b,c])=>{const p=gp(a),q=gp(b);return`<path d="M${p[0]} ${p[1]} A80 80 0 0 1 ${q[0]} ${q[1]}" stroke="${c}" style="filter:drop-shadow(0 0 4px ${c})"/>`}).join('');
+  $('gTicks').innerHTML=[0,5,8,15].map(v=>{const a=Math.PI*(1-v/G.max);return`<text x="${G.cx+100*Math.cos(a)}" y="${G.cy-100*Math.sin(a)+3}">${dig(v)}</text>`}).join('');
+}
+function renderGauge(r){G.target=isFinite(r.pb)?Math.min(G.max,r.pb):G.max;$('gTxt').textContent=isFinite(r.pb)?`${dig(nf(r.pb,1))} ${t('years')}`:'—'}
+function renderChart(r){
+  const L=50,R=580,T=15,B=225,max=Math.max(...r.g,...r.s,1)*1.05,mn=Math.min(0,...r.s);
+  const X=i=>L+i*(R-L)/20,Y=v=>B-(v-mn)/(max-mn)*(B-T),pts=a=>a.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join('');
+  const svg=$('lc');
+  if(!svg._init){svg._init=1;svg.innerHTML=`<g id="lcGrid" class="fd" font-size="10" fill="rgba(255,255,255,.5)"></g>
+    <path id="lG" class="line" pathLength="1" fill="none" stroke="#FF5E62" stroke-width="2.5" stroke-linecap="round"/>
+    <path id="lS" class="line" pathLength="1" fill="none" stroke="#00E676" stroke-width="2.5" stroke-linecap="round" style="filter:drop-shadow(0 0 4px #00E676)"/>
+    <g id="lNm"></g><g id="lBe"></g>`}
+  $('lNm').innerHTML=r.surplus>0?`<line x1="${X(3)}" x2="${X(3)}" y1="${T}" y2="${B}" stroke="rgba(255,255,255,.4)" stroke-dasharray="2 4"/><text x="${X(3)+6}" y="${B-8}" fill="rgba(255,255,255,.75)" font-size="10" class="fd">${dig(t('nmAfter'))}</text>`:'';
+  let gr='';for(let k=0;k<=4;k++){const v=mn+(max-mn)*k/4;gr+=`<line x1="${L}" x2="${R}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.07)"/><text x="${L-6}" y="${Y(v)+3}" text-anchor="end">${dig(short(v))}</text>`}
+  [0,5,10,15,20].forEach(i=>gr+=`<text x="${X(i)}" y="${B+18}" text-anchor="middle">${t('yr')} ${dig(i)}</text>`);
+  $('lcGrid').innerHTML=gr;$('lG').setAttribute('d',pts(r.g));$('lS').setAttribute('d',pts(r.s));
+  $('lBe').innerHTML=r.be?`<line x1="${X(r.be.x)}" x2="${X(r.be.x)}" y1="${T}" y2="${B}" stroke="#FFB800" stroke-dasharray="3 4"/><circle cx="${X(r.be.x)}" cy="${Y(r.be.y)}" r="6" fill="#FFB800" style="filter:drop-shadow(0 0 6px #FFB800)"/><text x="${X(r.be.x)+8}" y="${T+12}" fill="#FFB800" font-size="11" class="fd">${t('breakeven')} · ${dig(nf(r.be.x,1))} ${t('years')}</text>`:'';
+  $('net20').textContent=dig(money(r.net));$('co2').textContent=dig(nf(r.co2,1))+' '+t('t');
+}
+let wasDeal=false;
+function update(){
+  const r=calc();
+  updateTiles(r);renderGauge(r);renderChart(r);$('xKwh').textContent=dig(nf(r.daily,1));
+  const tar=S.type==='factory'?t('tarFac'):S.legacy?t('tarLeg'):t('tarRes');
+  $('useLine').textContent=dig(t('use')(nf(r.monthly,1),money(r.billNow),tar));
+  $('sizeV').textContent=dig(`${S.size}% · ${nf(r.kwp,2)} kWp`);
+  $('nmLine').textContent=dig(r.surplus>0?t('nmOn')(nf(r.surplus,1),money(r.buy)):t('nmOff'));
+  const deal=isFinite(r.pb)&&r.pb<5;$('deal').classList.toggle('hidden',!deal);
+  if(deal&&!wasDeal&&window.confetti)confetti({particleCount:150,spread:90,origin:{y:.65},colors:['#FFB800','#00E676','#ffffff']});
+  wasDeal=deal;
+}
+function renderAll(){
+  document.documentElement.lang=S.lang;
+  document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n));
+  $('langBtn').classList.toggle('bn',S.lang==='bn');
+  document.querySelectorAll('#types .seg').forEach(b=>b.classList.toggle('on',b.dataset.k===S.type));
+  movePill();renderApps();renderTiles();renderGaugeStatic();renderSky();update();
+  $('chatIn').placeholder=t('ph');setMode();tick();document.querySelectorAll('.rb').forEach(b=>setRb(b,b.dataset.state));
+}
+function toast(msg,act){const e=$('toast');e.textContent=msg;e._act=act||null;
+  if(act){e.setAttribute('role','button');e.tabIndex=0;e.style.pointerEvents='auto';e.style.cursor='pointer';e._ret=document.activeElement}
+  else{e.removeAttribute('role');e.removeAttribute('tabindex');e.style.pointerEvents='';e.style.cursor=''}
+  e.style.opacity=1;e.style.transform='translate(-50%,-6px)';clearTimeout(e._t);e._t=setTimeout(hideToast,act?6000:5000);
+  if(act)e.focus({preventScroll:true})}
+function hideToast(){const e=$('toast');clearTimeout(e._t);const had=document.activeElement===e;e.style.opacity=0;e.style.transform='';
+  e.removeAttribute('role');e.removeAttribute('tabindex');e.style.pointerEvents='';e.style.cursor='';e._act=null;
+  if(had&&e._ret&&e._ret.focus)e._ret.focus({preventScroll:true})}
+function runToast(ev){const e=$('toast');if(!e._act)return;if(ev.type==='keydown'){if(ev.key!=='Enter'&&ev.key!==' ')return;ev.preventDefault()}
+  const f=e._act;hideToast();f()}
+$('toast').addEventListener('click',runToast);$('toast').addEventListener('keydown',runToast);
+/* ----- Solar Bhai reply read-aloud ----- */
+const RB_SVG='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic ic-spk"><path d="M3 9.5h3.3L11 5.6v12.8l-4.7-3.9H3z" fill="currentColor"/><path d="M14.4 9.2a4 4 0 0 1 0 5.6M17.2 6.6a7.7 7.7 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></g><g class="ic ic-pause"><rect x="2" y="6" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="7.4" y="6" width="3.2" height="12" rx="1" fill="currentColor"/><g class="eq"><rect x="14" y="8" width="2" height="10" rx="1"/><rect x="17.5" y="8" width="2" height="10" rx="1"/><rect x="21" y="8" width="2" height="10" rx="1"/></g></g><g class="ic ic-play"><path d="M7 5.5v13l11-6.5z" fill="currentColor"/></g></svg>';
+const RBL={en:{read:'Read aloud',pause:'Pause reading',resume:'Resume reading'},bn:{read:'জোরে পড়ুন',pause:'পড়া থামান',resume:'আবার পড়ুন'}};
+let CUR_U=null,CUR_B=null;
+function setRb(b,st){if(!b)return;st=st||'idle';b.dataset.state=st;const L=RBL[S.lang];b.setAttribute('aria-label',st==='playing'?L.pause:st==='paused'?L.resume:L.read)}
+function stopSpeech(){const b=CUR_B;CUR_U=null;CUR_B=null;if(window.speechSynthesis)speechSynthesis.cancel();setRb(b,'idle')}
+
+/* ----- Language switch effects ----- */
+const LM={id:0,els:[],tm:[],lt:0};
+/* cancel a running morph; returns each element's currently visible (possibly mixed) sentence */
+function endMorph(){const cur=new Map();LM.id++;LM.tm.forEach(clearTimeout);LM.tm=[];
+  LM.els.forEach(e=>{const live=[...e.querySelectorAll('.x-mw')].filter(s=>!s.dataset.gone).map(s=>s.textContent);
+    e.getAnimations({subtree:true}).forEach(a=>a.cancel());if(live.length)cur.set(e,live.join(' '));e.style.minHeight=''});
+  LM.els=[];return cur}
+const G0='drop-shadow(0 0 0 rgba(255,184,0,0))',G1='drop-shadow(0 0 8px rgba(255,184,0,.9))',PX='perspective(400px) ';
+const FX={
+  out:[{opacity:1,transform:PX+'rotateX(0deg) translateY(0)'},{opacity:0,transform:PX+'rotateX(85deg) translateY(-.3em)'}],
+  inn:[{opacity:0,transform:PX+'rotateX(-85deg) translateY(.3em)',filter:G0},{opacity:1,transform:PX+'rotateX(0deg) translateY(0)',filter:G1,offset:.6},{opacity:1,transform:PX+'rotateX(0deg) translateY(0)',filter:G0}],
+  grow:[{opacity:0,transform:'scale(.2)',filter:G0},{opacity:1,transform:'scale(1.08)',filter:G1,offset:.6},{opacity:1,transform:'scale(1)',filter:G0}],
+  shrink:[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.2)'}],
+  glow:[{filter:G0},{filter:G1},{filter:G0}],
+  pulse:[{filter:G0},{filter:'drop-shadow(0 0 10px rgba(255,184,0,.75))'},{filter:G0}]};
+/* timing: 180ms per word, 160+160ms flip (wait 340 also covers grow/shrink/glow), 350ms settle; one element ≤2.5s, page ≤3s */
+const M_STEP=180,M_WAIT=340,M_SET=350,M_CAP=2500,M_PAGE=3000;
+const mStep=n=>n>1?Math.min(M_STEP,(M_CAP-M_WAIT-M_SET)/(n-1)):M_STEP;
+const mDur=(src,fin)=>{const n=Math.max(src.split(/\s+/).filter(Boolean).length,fin.split(/\s+/).filter(Boolean).length);return (n-1)*mStep(n)+M_WAIT+M_SET};
+function mkW(w){const s=document.createElement('span');s.className='x-mw';s.textContent=w;return s}
+/* in-place word substitution, then a FLIP settle into the exact dictionary sentence */
+function morphEl(e,src,fin,start,id){
+  const Sw=src.split(/\s+/).filter(Boolean),Tw=fin.split(/\s+/).filter(Boolean),ok=()=>id===LM.id;
+  const at=(ms,f)=>LM.tm.push(setTimeout(()=>{if(ok())f()},ms));
+  if(getComputedStyle(e).display!=='inline')e.style.minHeight=e.getBoundingClientRect().height+'px';
+  /* align: shared tokens (numbers, names, symbols) keep their slot; other target words fill slots left to right */
+  const slot=Sw.map(()=>-1),used=new Set();
+  Tw.forEach((w,k)=>{const j=Sw.findIndex((x,j)=>x===w&&slot[j]<0);if(j>=0){slot[j]=k;used.add(k)}});
+  const extra=Tw.map((_,k)=>k).filter(k=>!used.has(k));
+  for(let j=0;j<Sw.length&&extra.length;j++)if(slot[j]<0)slot[j]=extra.shift();
+  e.textContent='';const byK=[];
+  const sp=Sw.map((w,j)=>{if(j)e.appendChild(document.createTextNode(' '));const s=mkW(w);e.appendChild(s);if(slot[j]>=0)byK[slot[j]]=s;return s});
+  const n=Sw.length+extra.length,step=mStep(n);
+  for(let i=0;i<n;i++)at(start+i*step,()=>{
+    if(i<Sw.length){const s=sp[i],k=slot[i];
+      if(k<0){s.dataset.gone=1;s.animate(FX.shrink,{duration:200,easing:'ease-in',fill:'forwards'}).finished.then(()=>{if(!ok())return;
+        const p=s.previousSibling||s.nextSibling;if(p&&p.nodeType===3)p.remove();s.remove()}).catch(()=>{})}
+      else if(Sw[i]===Tw[k])s.animate(FX.glow,{duration:300});
+      else s.animate(FX.out,{duration:160,easing:'ease-in',fill:'forwards'}).finished.then(()=>{if(!ok())return;
+        s.textContent=Tw[k];s.getAnimations().forEach(a=>a.cancel());s.animate(FX.inn,{duration:160,easing:'cubic-bezier(.2,.8,.3,1)'})}).catch(()=>{})}
+    else{const k=extra[i-Sw.length],s=mkW(Tw[k]);byK[k]=s;e.appendChild(document.createTextNode(' '));e.appendChild(s);
+      s.animate(FX.grow,{duration:280,easing:'cubic-bezier(.2,.8,.3,1)'})}
+  });
+  const land=()=>{e.textContent=fin;e.style.minHeight='';e.animate(FX.pulse,{duration:520,easing:'ease-out'});LM.els=LM.els.filter(x=>x!==e)};
+  at(start+(n-1)*step+M_WAIT,()=>{
+    const order=[...e.querySelectorAll('.x-mw')].map(s=>byK.indexOf(s));
+    if(order.length===Tw.length&&order.every((k,i)=>k===i)&&e.textContent===fin){land();return}
+    /* FLIP: measure, swap in the final word spans, animate each from old to new position */
+    const first=Tw.map((_,k)=>byK[k]&&byK[k].isConnected?byK[k].getBoundingClientRect():null);
+    e.textContent='';const ns=[];
+    fin.split(/(\s+)/).filter(Boolean).forEach(p=>{if(/^\s+$/.test(p))e.appendChild(document.createTextNode(p));else{const s=mkW(p);e.appendChild(s);ns.push(s)}});
+    ns.forEach((s,k)=>{const f=first[k];if(!f)return;const l=s.getBoundingClientRect(),dx=f.left-l.left,dy=f.top-l.top;
+      if(Math.abs(dx)+Math.abs(dy)>.5)s.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],{duration:M_SET,easing:'ease-out'})});
+    at(M_SET,land)});
+}
+function swapLang(b){
+  const old=S.lang,nl=old==='en'?'bn':'en';
+  const cur=endMorph();
+  clearTimeout(LM.lt);b.classList.remove('landed');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){S.lang=nl;renderAll();b.classList.add('landed');return}
+  LM.lt=setTimeout(()=>b.classList.add('landed'),460);
+  b.style.setProperty('--td',nl==='bn'?'-60%':'60%');b.classList.remove('go');void b.offsetWidth;b.classList.add('go');
+  for(let i=0;i<7;i++){const s=document.createElement('span'),a=Math.random()*6.28,r=14+Math.random()*14;s.className='lt-s';
+    s.style.left=nl==='bn'?'75%':'25%';s.style.background=i%2?'#00E676':'#FFB800';s.style.boxShadow='0 0 6px '+s.style.background;b.appendChild(s);
+    s.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) scale(0)`,opacity:0}],{duration:420+Math.random()*180,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>s.remove()}
+  const w=document.createElement('div');w.className='x-wipe';document.body.appendChild(w);
+  w.animate([{transform:'translateX(-100%)'},{transform:'translateX(100%)'}],{duration:650,easing:'ease-in-out'}).onfinish=()=>w.remove();
+  const vis=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<innerHeight};
+  S.lang=nl;renderAll();
+  document.querySelectorAll('.glass').forEach(c=>{if(c.tagName!=='HEADER'&&!c.closest('header')&&vis(c))c.animate([{transform:'none'},{transform:'perspective(800px) rotateY(8deg)'},{transform:'none'}],{duration:520,easing:'ease-in-out'})});
+  /* word substitution morph: source is the visible sentence (mixed, if a morph was cut short); target is always the dictionary text */
+  const jobs=[...document.querySelectorAll('[data-i18n]')].map(e=>{const k=e.dataset.i18n,z=I18N[nl][k],a=cur.get(e)||I18N[old][k];
+    return{e,src:typeof a==='string'?a.trim():'',fin:z}}).filter(j=>typeof j.fin==='string'&&j.fin.trim()&&j.src&&j.src!==j.fin&&vis(j.e));
+  /* 60ms stagger in document order, shrunk so the last element still lands within the 3s page budget */
+  const gap=jobs.reduce((g,j,i)=>i?Math.min(g,Math.max(0,(M_PAGE-mDur(j.src,j.fin))/i)):g,60);
+  const id=LM.id;LM.els=jobs.map(j=>j.e);
+  jobs.forEach((j,i)=>morphEl(j.e,j.src,j.fin,i*gap,id));
+}
+
+/* ===== 4. EVENTS + ANIMATION LOOP ===== */
+function setType(k){S.type=k;APPS.forEach(a=>S.qty[a.k]=PRESETS[k][a.k]||0)}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const {act,k}=b.dataset,d=+b.dataset.d;
+  if(act==='q'){S.qty[k]=Math.max(0,Math.min(999,(S.qty[k]||0)+d));updateApps();update()}
+  else if(act==='h'){S.hrs[k]=Math.max(0,Math.min(24,S.hrs[k]+d));updateApps();update()}
+  else if(act==='type'){setType(k);renderAll()}
+  else if(act==='lang')swapLang(b);
+  else if(act==='bhai')openBhai(!xIsOpen());
+  else if(act==='bhaiX')openBhai(false);
+  else if(act==='chip')ask(b.textContent.trim());
+  else if(act==='askRes'){openBhai(true);ask(t('resQ'))}
+  else if(act==='spk')rbTap(b);
+});
+$('sizeR').addEventListener('input',e=>{S.size=+e.target.value;update()});
+['mkt','leg'].forEach(id=>$(id).addEventListener('change',()=>{S.market=$('mkt').checked;S.legacy=$('leg').checked;update()}));
+$('sunR').addEventListener('input',e=>{S.sunH=+e.target.value;APPS.forEach(a=>{if(a.k!=='fridge')S.hrs[a.k]=S.sunH});renderSky();updateApps();update()});
+if(window.speechSynthesis)speechSynthesis.getVoices();
+let last=0,fanA=0,lraf=0;const lOn=new Map();
+/* inertial wheel scroll: desktop wheel only, stepped inside the shared rAF loop */
+const SS={on:false,y:0};
+const ssMax=()=>Math.max(0,document.documentElement.scrollHeight-innerHeight);
+const ssStop=()=>{SS.on=false;SS.y=scrollY};
+function ssStep(){if(!SS.on)return;const c=scrollY,d=SS.y-c;
+  if(Math.abs(d)<.5){scrollTo({top:SS.y,behavior:'instant'});SS.on=false;return}
+  scrollTo({top:c+d*.12,behavior:'instant'})}
+(()=>{const fine=matchMedia('(hover:hover) and (pointer:fine)'),rmq=matchMedia('(prefers-reduced-motion: reduce)');
+  addEventListener('wheel',e=>{
+    if(!fine.matches||rmq.matches||e.ctrlKey||e.defaultPrevented||Math.abs(e.deltaX)>Math.abs(e.deltaY)){if(SS.on)ssStop();return}
+    if(e.target.closest&&e.target.closest('#drawer')){if(SS.on)ssStop();return}
+    e.preventDefault();
+    if(!SS.on)SS.y=scrollY;
+    const k=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1;
+    SS.y=Math.max(0,Math.min(ssMax(),SS.y+e.deltaY*k));SS.on=true;lStart()},{passive:false});
+  ['keydown','touchstart','pointerdown'].forEach(t=>addEventListener(t,()=>{if(SS.on)ssStop()},{passive:true,capture:true}));
+  document.addEventListener('click',e=>{if(SS.on&&e.target.closest&&e.target.closest('a[href^="#"]'))ssStop()},true);
+  addEventListener('resize',()=>{if(SS.on)SS.y=Math.min(SS.y,ssMax())});})();
+function lStart(){if(!lraf&&!document.hidden&&(SS.on||!lOn.size||[...lOn.values()].some(Boolean))){last=0;lraf=requestAnimationFrame(loop)}}
+function lStop(){cancelAnimationFrame(lraf);lraf=0}
+document.addEventListener('visibilitychange',()=>document.hidden?lStop():lStart());
+if('IntersectionObserver' in window){const lio=new IntersectionObserver(en=>{en.forEach(e=>lOn.set(e.target,e.isIntersecting));[...lOn.values()].some(Boolean)||SS.on?lStart():lStop()});
+  [$('needle').ownerSVGElement,$('tiles')].forEach(el=>el&&lio.observe(el))}
+function loop(ts){
+  lraf=0;if(document.hidden){SS.on=false;return}
+  ssStep();
+  const dt=last?Math.min(.05,(ts-last)/1000):0;last=ts;
+  const q=S.qty.fan||0;fanA=(fanA+(q?Math.min(1500,180+q*120):0)*dt)%360;
+  const bl=$('blades');if(bl)bl.setAttribute('transform',`rotate(${fanA} 24 24)`);
+  G.vel+=(90*(G.target-G.cur)-9*G.vel)*dt;G.cur+=G.vel*dt;
+  $('needle').setAttribute('transform',`rotate(${-90+180*Math.max(-.3,Math.min(G.max+.3,G.cur))/G.max} 100 100)`);
+  if(SS.on||!lOn.size||[...lOn.values()].some(Boolean))lraf=requestAnimationFrame(loop);
+}
+/* ===== 5. MARKET SNAPSHOT + COUNTDOWN + LIVE CHECK ===== */
+const SNAP={asOf:'Oct 2026',
+  panelsPerWatt:{range:'৳18–40',tier1TopEnd:'Jinko, Trina, JA, Longi',otherSurvey:{tier1:'৳40–50',budget:'৳27–36'}},
+  gridTieInverterPerKW:{'Huawei SUN2000':'৳7,000–9,000','Sungrow':'৳6,000–8,000','Growatt MOD/MAX':'৳5,000–6,800'},
+  hybridInverter3kW:{'Growatt SPF 3500 ES':'৳80,750','Solis 3kW':'৳96,000'},
+  installed:{'1 kW on-grid, no battery':'৳75,000–1,05,000','5 kW grid-tie':'৳3,25,000–4,10,000','5 kW hybrid + 10 kWh lithium':'৳6,00,000–7,50,000'},
+  netMetering:{source:'Power Division gazette, 1 Sep 2026',buyback:'৳10.50/unit',installBy:'28 Feb 2027',paidFor:'3 years, until 28 Feb 2030',payment:'bank or mobile financial service, never cash',standards:'BSTI and SREDA',afterFeb2030:'৳8.00/unit (assumed)'},
+  bercAverageRetailTariff:'৳10.40/unit (June 2026)'};
+const DL=Date.parse('2027-02-28T23:59:00+06:00');
+function tick(){const ms=Math.max(0,DL-Date.now());
+  $('cdD').textContent=dig(Math.floor(ms/864e5));$('cdH').textContent=dig(Math.floor(ms%864e5/36e5));$('cdM').textContent=dig(Math.floor(ms%36e5/6e4));}
+setInterval(tick,15000);
+(async()=>{try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),6000);
+  const res=await fetch('https://search.parallel.ai/mcp',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Accept:'application/json, text/event-stream'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/list',params:{}})});
+  clearTimeout(tm);if(res.ok){S.live=true;$('liveTag').textContent='● Live';$('liveTag').classList.add('text-[#00E676]','border-[#00E676]')}
+}catch(e){}})();
+
+/* ===== 6. SOLAR BHAI ===== */
+const MODELS=['qwen/qwen3.8-27b:free','nvidia/nemotron-3-super-120b-a12b:free','google/gemma-4-31b-it:free','google/gemini-2.5-flash','openrouter/free'];
+const SYS="You are Solar Bhai (সৌর ভাই), a warm, funny, trustworthy Bangladeshi solar engineer from Dhaka. Reply in simple Bangla (English if the user writes English), short sentences. Reason step by step from the attached calculation JSON about power use, kWp size, on-grid vs hybrid battery given load-shedding, payback, the Tk 10.50 net-metering buyback before 28 Feb 2027, BSTI/SREDA-approved equipment, and saving tips (inverter AC, LED). Use only prices from the attached market snapshot. End with one clear next step.";
+const BH={hist:[],busy:false,greeted:false,last:''};
+const isBn=s=>/[\u0980-\u09FF]/.test(s);
+function setMode(){const k=$('apiKey').value.trim();$('bhaiMode').textContent=k?t('online')($('model').value):t('offMode')}
+$('apiKey').addEventListener('input',setMode);$('model').addEventListener('change',setMode);
+let X_ANIM=null;
+function xIsOpen(){const d=$('drawer');return d.classList.contains('open')&&!d.classList.contains('x-closing')}
+function xLand(sparks){const btn=$('bhaiBtn'),b=btn.getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2;
+  btn.animate([{scale:1},{scale:.9,offset:.35},{scale:1}],{duration:380,easing:'cubic-bezier(.34,1.56,.64,1)'});
+  const mk=c=>{const e=document.createElement('span');e.className=c;e.style.left=cx+'px';e.style.top=cy+'px';document.body.appendChild(e);return e};
+  const ring=mk('x-burst');ring.animate([{transform:'scale(.9)',opacity:.95},{transform:'scale(1.9)',opacity:0}],{duration:620,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>ring.remove();
+  if(sparks)for(let i=0;i<6;i++){const s=mk('x-spark'+(i%2?' x-g':'')),a=i/6*Math.PI*2+Math.random()*.4,r=44+Math.random()*16;
+    s.animate([{transform:'translate(0,0) scale(.4)',opacity:0},{opacity:1,offset:.25},{transform:`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) scale(1)`,opacity:0}],{duration:660,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>s.remove()}}
+/* One shared FLIP genie: K runs closed -> open; OPEN plays K, CLOSE plays K exactly reversed */
+function xGenie(d,on){
+  const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,btn=$('bhaiBtn');
+  const kids=[...d.children].filter(e=>!e.classList.contains('x-streak'));
+  let from=null;
+  if(X_ANIM){/* interrupted: capture the live state, then reverse from it (no jump) */
+    const cs=getComputedStyle(d);
+    from={transform:cs.transform,clipPath:cs.clipPath,opacity:cs.opacity,p:Math.min(1,Math.max(0,(performance.now()-X_ANIM.t0)/X_ANIM.dur)),
+      kids:kids.map(k=>{const s=getComputedStyle(k);return{opacity:s.opacity,translate:s.translate==='none'?'0px 0px':s.translate,visibility:s.visibility}})};
+    X_ANIM.all.forEach(a=>a.cancel());X_ANIM=null}
+  d.querySelectorAll('.x-streak').forEach(e=>e.remove());
+  d.classList.add('open','x-anim');d.classList.toggle('x-closing',!on);
+  const fin=fn=>st=>{const done=()=>{if(X_ANIM!==st)return;X_ANIM=null;
+      if(!on)d.classList.remove('open','x-closing');st.all.forEach(a=>a.cancel());d.classList.remove('x-anim');d.style.transformOrigin='';fn&&fn()};
+    Promise.all(st.all.map(a=>a.finished)).then(done).catch(()=>{});
+    /* safety net: never leave the drawer scaled if a finished promise stalls */
+    const end=Math.max(...st.all.map(a=>{const t=a.effect.getComputedTiming();return t.endTime||0}));setTimeout(done,end+120)};
+  if(rm){const dur=from?Math.max(60,150*from.p):150;
+    const a=d.animate([{opacity:from?from.opacity:(on?0:1)},{opacity:on?1:0}],{duration:dur,easing:'ease',fill:'both'});
+    const st={t0:performance.now(),dur,all:[a]};X_ANIM=st;fin(null)(st);return}
+  /* FLIP: measure the drawer at rest and the floating button */
+  const r=d.getBoundingClientRect(),b=btn.getBoundingClientRect(),bw=btn.offsetWidth||b.width;
+  const w=r.width,h=r.height,R=Math.min(w,h)/2,s=bw/(2*R);
+  const bcx=b.left+b.width/2,bcy=b.top+b.height/2;
+  const ox=Math.min(Math.max(bcx-r.left,R),w-R),oy=Math.min(Math.max(bcy-r.top,R),h-R);
+  const tx=bcx-(r.left+ox),ty=bcy-(r.top+oy),rad=parseFloat(getComputedStyle(d).borderTopLeftRadius)||20;
+  d.style.transformOrigin=ox+'px '+oy+'px';
+  /* reveal by clip only (no scale), so every control keeps its full tap size throughout */
+  const br=bw/2,cx=Math.min(Math.max(bcx-r.left,br),w-br),cy=Math.min(Math.max(bcy-r.top,br),h-br);
+  const shut={transform:`translate(${(tx*.08).toFixed(1)}px,${(ty*.08).toFixed(1)}px) scale(1)`,clipPath:`inset(${cy-br}px ${w-cx-br}px ${h-cy-br}px ${cx-br}px round ${br}px)`,opacity:0};
+  const full={transform:'translate(0px,0px) scale(1)',clipPath:`inset(0px 0px 0px 0px round ${rad}px)`,opacity:1};
+  const K=[{...shut,offset:0},{opacity:1,offset:.3},{...full,offset:1}];
+  let frames=on?K:K.slice().reverse().map(f=>({...f,offset:1-f.offset}));
+  const T=on?{duration:520,easing:'cubic-bezier(.2,.9,.25,1.12)'}:{duration:420,easing:'cubic-bezier(.5,0,.75,0)'};
+  const dur=from?Math.max(140,Math.round(T.duration*from.p)):T.duration;
+  if(from)frames=[{transform:from.transform,clipPath:from.clipPath,opacity:from.opacity},on?full:shut];
+  const all=[d.animate(frames,{duration:dur,easing:T.easing,fill:'both'})];
+  /* content: rises in after 60% of the open, fades out first on close */
+  const n=kids.length;
+  /* content stays visibility:hidden while the drawer is scaled down, so it is only ever shown and tappable at full size */
+  kids.forEach((k,i)=>{const f0=from?from.kids[i]:(on?{opacity:0,translate:'0px 8px',visibility:'hidden'}:{opacity:1,translate:'0px 0px',visibility:'visible'});
+    const f1=on?{opacity:1,translate:'0px 0px',visibility:'visible'}:{opacity:0,translate:'0px 8px',visibility:'hidden'};
+    all.push(k.animate([f0,f1],on?{duration:220,delay:Math.round(dur*.6)+i*30,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'}
+      :{duration:140,delay:(n-1-i)*30*(from?from.p:1),easing:'ease-in',fill:'both'}))});
+  const st={t0:performance.now(),dur,all};X_ANIM=st;
+  if(on){if(!from)xLand(false);/* button squash + glow ring at the start of open */
+    const sk=document.createElement('span');sk.className='x-streak';sk.setAttribute('aria-hidden','true');
+    const i=document.createElement('i');sk.appendChild(i);d.appendChild(sk);
+    const sa=i.animate([{transform:'translateX(-130%) skewX(-18deg)'},{transform:'translateX(330%) skewX(-18deg)'}],{duration:620,delay:Math.round(dur*.62),easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
+    sa.onfinish=sa.oncancel=()=>sk.remove()}
+  fin(on?null:()=>xLand(true))(st)}
+function openBhai(on){const d=$('drawer'),was=xIsOpen();if(!on&&was)stopSpeech();if(on!==was)xGenie(d,on);d.setAttribute('aria-hidden',!on);
+  if(on){if(!BH.greeted){BH.greeted=true;addMsg('bot',t('hello'),'Solar Bhai')}setTimeout(()=>$('chatIn').focus(),300)}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')openBhai(false)});
+function addMsg(role,text,label){
+  const el=document.createElement('div');el.className=role==='user'?'mu':'mb';
+  if(role==='user')el.textContent=text;
+  else{el.innerHTML=`<div class="flex items-center justify-between gap-2 mb-1"><span class="text-xs text-[#FFC933]"></span><button type="button" class="rb" data-act="spk" data-state="idle" aria-label="${RBL[S.lang].read}">${RB_SVG}</button></div><div class="txt"></div>`;
+    el.querySelector('span').textContent=label;el.querySelector('.txt').textContent=text}
+  $('msgs').appendChild(el);$('msgs').scrollTop=$('msgs').scrollHeight;return el;
+}
+function ctx(){const r=calc(),R=(n,d=0)=>isFinite(n)?+n.toFixed(d):null;
+  return{userType:S.type,uiLanguage:S.lang,
+    appliances:APPS.map(a=>({name:I18N.en[a.k],watts:a.w,qty:S.qty[a.k]||0,hoursPerDay:S.hrs[a.k],kWhPerDay:R(a.w*(S.qty[a.k]||0)*S.hrs[a.k]/1000,2)})),
+    results:{dailyKWh:R(r.daily,2),monthlyKWh:R(r.monthly,1),recommendedKWp:R(r.rec,2),systemSizePct:S.size,kWp:R(r.kwp,2),panels585W:r.panels,
+      systemCostTk:R(r.cost),costBasisTkPerKWp:S.market?C.costMkt:C.costStd,gridBillNowTkPerMonth:R(r.billNow),solarKWhPerMonth:R(r.solarM,1),
+      surplusKWhPerMonth:R(r.surplus,1),netMeteringBuybackTkPerMonth:R(r.buy),monthlySavingsTk:R(r.save),paybackYears:R(r.pb,1),
+      net20YearSavingsTk:R(r.net),co2AvoidedTonnes20yr:R(r.co2,1),
+      tariff:S.type==='factory'?'LT-C1 ৳11.45 + 5% VAT':S.legacy?'legacy slabs + 5% VAT':'BERC LT-A telescopic + 5% VAT',
+      daysLeftForTk10_50:Math.max(0,Math.ceil((DL-Date.now())/864e5))},
+    snapshot:SNAP};
+}
+function offline(q,lang){
+  const r=calc(),bn=lang==='bn',D=s=>bn?String(s).replace(/\d/g,d=>BN_D[d]):String(s),M=n=>D(money(n));
+  const loads=APPS.map(a=>({a,e:a.w*(S.qty[a.k]||0)*S.hrs[a.k]})).sort((x,y)=>y.e-x.e),tot=loads.reduce((s,l)=>s+l.e,0);
+  if(!tot)return bn?'আগে কিছু যন্ত্র যোগ করুন, তারপর আমি হিসাব করে বলব। পরের ধাপ: উপরে − / + চেপে যন্ত্র বেছে নিন।':'Add some appliances first and I will do the maths. Next step: tap − / + above to pick your appliances.';
+  const top=loads[0],share=Math.round(top.e/tot*100),nm=I18N[bn?'bn':'en'][top.a.k],days=Math.max(0,Math.ceil((DL-Date.now())/864e5));
+  const pb=isFinite(r.pb)?D(nf(r.pb,1)):'—',big=r.kwp>3.5,ql=q.toLowerCase();
+  const topic=/বাঁচ|সাশ্রয়|টাকা|save|saving|money/.test(ql)?'save':/ব্যাটারি|লোডশেড|battery|backup|load.?shed/.test(ql)?'bat':/ইনভার্টার|ব্র্যান্ড|inverter|brand/.test(ql)?'inv':/নেট|মিটার|net|meter|buyback/.test(ql)?'nm':'all';
+  const L=bn?{
+    size:`আপনার দৈনিক ব্যবহার ${D(nf(r.daily,1))} kWh। তাই ${D(nf(r.kwp,2))} kWp সিস্টেম, মানে ${D(r.panels)}টি ৫৮৫W প্যানেল।`,
+    cost:`খরচ প্রায় ${M(r.cost)}। মাসে বাঁচবে ${M(r.save)}। ${pb} বছরে টাকা উঠে আসবে।`,
+    sur:r.surplus>0?`প্রতি মাসে বাড়তি ${D(nf(r.surplus,1))} kWh গ্রিডে বেচে পাবেন ${M(r.buy)} (৳১০.৫০/ইউনিট)।`:'',
+    load:`সবচেয়ে বেশি বিদ্যুৎ খায় ${nm}: মোটের ${D(share)}%।`+(top.a.k==='ac'?' ইনভার্টার এসি নিলে আর ২৫–২৬°C-এ চালালে বিল অনেক কমবে।':top.a.k==='led'?' সব বাতি এলইডি রাখুন, অপ্রয়োজনে বন্ধ করুন।':' পুরনো যন্ত্র বদলে সাশ্রয়ী মডেল নিন, আর বাতি সব এলইডি রাখুন।'),
+    bat:`লোডশেডিং বেশি হলে হাইব্রিড + ব্যাটারি নিন: ৫ kW হাইব্রিড + ১০ kWh লিথিয়াম ৳৬,০০,০০০–৭,৫০,০০০। ৩ kW হাইব্রিড ইনভার্টার: Growatt SPF 3500 ES ৳৮০,৭৫০, Solis ৳৯৬,০০০। শুধু বিল কমাতে চাইলে অন-গ্রিড সস্তা (৫ kW ৳৩,২৫,০০০–৪,১০,০০০), তবে লোডশেডিংয়ে বন্ধ থাকে।`,
+    inv:`গ্রিড-টাই ইনভার্টার, প্রতি kW: প্রিমিয়াম Huawei SUN2000 ৳৭,০০০–৯,০০০; মাঝারি Sungrow ৳৬,০০০–৮,০০০; বাজেট Growatt MOD/MAX ৳৫,০০০–৬,৮০০। প্যানেল: Tier-1 ৳৪০–৫০/W, বাজেট ৳২৭–৩৬/W।`+(big?' আপনার আকারে Sungrow বা Huawei ভালো মান দেবে।':' ছোট সিস্টেমে Growatt যথেষ্ট।'),
+    nm:`২৮ ফেব্রুয়ারি ২০২৭-এর মধ্যে বসালে ৩ বছর (২৮ ফেব্রু ২০৩০ পর্যন্ত) বাড়তি বিদ্যুৎ ৳১০.৫০/ইউনিট। আর মাত্র ${D(days)} দিন বাকি। যন্ত্র BSTI ও SREDA মানের হতে হবে। টাকা আসবে ব্যাংক বা মোবাইল ব্যাংকিংয়ে, নগদে কখনো না।`,
+    next:'পরের ধাপ: BSTI/SREDA অনুমোদিত ২–৩ জন ইনস্টলার থেকে লিখিত কোটেশন নিন আর উপরের বাজার দরের সাথে মিলিয়ে দেখুন।'
+  }:{
+    size:`You use ${nf(r.daily,1)} kWh a day, so a ${nf(r.kwp,2)} kWp system fits: ${r.panels} panels of 585 W.`,
+    cost:`It costs about ${money(r.cost)}. You save ${money(r.save)} a month. Payback in ${pb} years.`,
+    sur:r.surplus>0?`Each month ${nf(r.surplus,1)} kWh extra goes to the grid, earning ${money(r.buy)} at ৳10.50/unit.`:'',
+    load:`Your biggest load is ${nm}: ${share}% of your use.`+(top.a.k==='ac'?' An inverter AC set at 25–26°C cuts this a lot.':top.a.k==='led'?' Keep every light LED and switch off empty rooms.':' Swap old units for efficient ones and keep all lights LED.'),
+    bat:`With heavy load-shedding, go hybrid with a battery: 5 kW hybrid + 10 kWh lithium ৳6,00,000–7,50,000. 3 kW hybrid inverters: Growatt SPF 3500 ES ৳80,750, Solis ৳96,000. To just cut bills, on-grid is cheaper (5 kW ৳3,25,000–4,10,000) but shuts off during load-shedding.`,
+    inv:`Grid-tie inverters per kW: premium Huawei SUN2000 ৳7,000–9,000; mid Sungrow ৳6,000–8,000; budget Growatt MOD/MAX ৳5,000–6,800. Panels: Tier-1 ৳40–50/W vs budget ৳27–36/W.`+(big?' At your size, Sungrow or Huawei is good value.':' For a small system, Growatt is enough.'),
+    nm:`Install by 28 Feb 2027 and surplus is paid ৳10.50/unit for 3 years, until 28 Feb 2030. Only ${days} days left. Equipment must meet BSTI and SREDA standards. Payment comes by bank or mobile financial service, never cash.`,
+    next:'Next step: get written quotes from 2–3 BSTI/SREDA-approved installers and check them against the market snapshot above.'};
+  const order={save:['cost','sur','size','load','nm'],bat:['bat','size','cost','nm'],inv:['inv','size','cost','nm'],nm:['nm','sur','size','cost'],all:['size','cost','sur','load','nm']}[topic];
+  return order.map(k=>L[k]).filter(Boolean).join('\n')+'\n\n'+L.next;
+}
+function speak(txt,btn){const ss=window.speechSynthesis;if(!ss)return;stopSpeech();
+  const clean=txt.replace(/[*#_`]/g,''),vs=ss.getVoices(),u=new SpeechSynthesisUtterance(clean);
+  if(isBn(clean)){const v=vs.find(v=>/^bn/i.test(v.lang));if(v){u.voice=v;u.lang=v.lang}}
+  else{const v=vs.find(v=>/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en[-_]GB/i.test(v.lang));u.lang=v?v.lang:'en-US';if(v)u.voice=v}
+  u.rate=.95;CUR_U=u;CUR_B=btn;
+  u.onend=u.onerror=()=>{if(CUR_U===u){const b=CUR_B;CUR_U=null;CUR_B=null;setRb(b,'idle')}};
+  setRb(btn,'playing');ss.speak(u)}
+function rbTap(b){const ss=window.speechSynthesis;if(!ss)return;
+  if(CUR_U&&CUR_B===b){if(b.dataset.state==='paused'){ss.resume();setRb(b,'playing')}else{ss.pause();setRb(b,'paused')}return}
+  speak(b.closest('.mb').querySelector('.txt').textContent,b)}
+function setBusy(on){BH.busy=on;const b=$('chatSend');b.classList.toggle('is-busy',on);b.setAttribute('aria-disabled',on?'true':'false')}
+function busyToast(){toast(S.lang==='bn'?'সৌর ভাই এখনও উত্তর দিচ্ছেন…':'Solar Bhai is still answering…')}
+async function ask(q){
+  if(!q)return;if(BH.busy){busyToast();return}setBusy(true);
+  let typ=null;
+  try{
+    const lang=isBn(q)?'bn':/[a-z]/i.test(q)?'en':S.lang;
+    addMsg('user',q);BH.hist.push({role:'user',content:q});
+    typ=document.createElement('div');typ.className='mb dots';typ.setAttribute('aria-label','Solar Bhai is typing');typ.innerHTML='<span></span><span></span><span></span>';
+    $('msgs').appendChild(typ);$('msgs').scrollTop=$('msgs').scrollHeight;
+    const key=$('apiKey').value.trim();let reply='',used='';
+    if(key){const i=MODELS.indexOf($('model').value);
+      const order=[...new Set([...MODELS.slice(i),...MODELS.slice(0,i)].filter(m=>m!=='openrouter/free').concat('openrouter/free'))];
+      const msgs=[{role:'system',content:SYS+'\n\nCalculation + market snapshot JSON:\n'+JSON.stringify(ctx())},...BH.hist.slice(-8)];
+      for(const m of order){const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);try{
+        const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',signal:ac.signal,headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','X-Title':'SolarSwap BD'},body:JSON.stringify({model:m,messages:msgs})});
+        if(!res.ok)throw 0;const j=await res.json(),c=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+        if(c&&c.trim()){reply=c.trim();used=m;break}
+      }catch(e){}finally{clearTimeout(tm)}}}
+    typ.remove();typ=null;
+    let bm;if(reply)bm=addMsg('bot',reply,'Solar Bhai · '+used);else{reply=offline(q,lang);bm=addMsg('bot',reply,'Solar Bhai (offline mode)')}
+    BH.hist.push({role:'assistant',content:reply});
+  }finally{if(typ)typ.remove();setBusy(false)}
+}
+function send(){const i=$('chatIn'),v=i.value.trim();if(!v)return;if(BH.busy){busyToast();return}i.value='';ask(v)}
+$('chatSend').addEventListener('click',send);
+$('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+
+/* ===== button FX: sliding pill + shared ripple ===== */
+function movePill(){const a=document.querySelector('#types .seg.on'),p=document.querySelector('#types .x-pill');if(!a||!p)return;
+  Object.assign(p.style,{width:a.offsetWidth+'px',height:a.offsetHeight+'px',transform:`translate(${a.offsetLeft}px,${a.offsetTop}px)`})}
+addEventListener('resize',movePill);document.fonts&&document.fonts.ready.then(movePill);
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn-fx');if(!b||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,sp=document.createElement('span');sp.className='x-rip';
+  sp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(sp);setTimeout(()=>sp.remove(),600)});
+renderSkyStatic();setType('household');renderAll();lStart();
+</script>
+<script>
+/* ===== Premium motion ===== */
+(()=>{const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,q=(s,r=document)=>[...r.querySelectorAll(s)];
+  /* hero headline: word spans, re-split after any text swap */
+  const h=document.querySelector('#hero h1');let st;
+  const split=()=>{if(h.querySelector('.x-w'))return;const w=h.textContent.trim().split(/\s+/);h.textContent='';
+    w.forEach((s,i)=>{const e=document.createElement('span');e.className='x-w';e.style.setProperty('--i',i);e.textContent=s;h.append(e,' ')})};
+  if(!rm)h.classList.add('x-in');split();setTimeout(()=>h.classList.remove('x-in'),2600);
+  new MutationObserver(()=>{if(h.querySelector('.x-w'))return;clearTimeout(st);st=setTimeout(split,700)}).observe(h,{childList:true,characterData:true,subtree:true});
+  if(rm)return;
+  /* scroll progress */
+  const bar=document.querySelector('.x-prog');let pr=0;
+  const prog=()=>{pr=0;const m=document.documentElement.scrollHeight-innerHeight;bar.style.transform=`scaleX(${m>0?scrollY/m:0})`};
+  addEventListener('scroll',()=>{if(!pr)pr=requestAnimationFrame(prog)},{passive:true});addEventListener('resize',prog);prog();
+  /* scroll reveals */
+  const els=q('section[id]:not(#hero), section[id]:not(#hero) .glass:not(.press), body>div>footer');
+  els.forEach(e=>e.classList.add('x-rv'));
+  const io=new IntersectionObserver(en=>{let i=0;const base=Math.max(0,1000-performance.now());
+    en.forEach(x=>{if(!x.isIntersecting)return;const e=x.target;io.unobserve(e);e.style.setProperty('--rd',(base+i++*60)+'ms');e.classList.add('x-vis');
+      e.addEventListener('transitionend',function f(v){if(v.target!==e||v.propertyName!=='opacity')return;e.removeEventListener('transitionend',f);e.classList.remove('x-rv','x-vis');e.style.removeProperty('--rd')})})},
+    {rootMargin:'0px 0px -8% 0px',threshold:.08});
+  els.forEach(e=>io.observe(e));
+  /* card tilt + spotlight (fine pointers only) */
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  let cur=null,ev,raf=0;
+  const off=()=>{if(cur){cur.classList.remove('x-on');cur.style.transform=''}cur=null};
+  const tilt=()=>{raf=0;let c=ev.target.closest&&ev.target.closest('section .glass:not(.press)');if(c&&c.querySelector('input'))c=null;
+    if(c!==cur){off();cur=c;if(c)c.classList.add('x-on')}if(!c)return;
+    const r=c.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width,y=(ev.clientY-r.top)/r.height;
+    c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%');
+    c.style.transform=`perspective(900px) rotateX(${((.5-y)*12).toFixed(2)}deg) rotateY(${((x-.5)*12).toFixed(2)}deg)`};
+  document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;ev=e;if(!raf)raf=requestAnimationFrame(tilt)},{passive:true});
+  document.documentElement.addEventListener('pointerleave',off);addEventListener('blur',off);
+})();
+</script>
+<script>
+/* ===== Background: starfield + solar dust, section glows ===== */
+(()=>{const cv=document.getElementById('x-sky'),c=cv.getContext('2d'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches,fine=matchMedia('(hover:hover) and (pointer:fine)').matches,R=Math.random;
+  let W,H,D,raf=0,mx=0,my=0,px=0,py=0;
+  const stars=Array.from({length:90},()=>({x:R(),y:R(),z:.3+R()*.7,r:.4+R()*1.1,p:R()*6.3,s:.6+R()*1.6}));
+  const dust=Array.from({length:12},()=>({x:R(),y:R(),z:.5+R()*.5,r:1.2+R()*1.8,v:.006+R()*.01,p:R()*6.3}));
+  const sp=document.createElement('canvas');sp.width=sp.height=64;{const g=sp.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,'rgba(255,240,190,1)');gr.addColorStop(.18,'rgba(255,214,107,.85)');gr.addColorStop(.45,'rgba(255,184,0,.25)');gr.addColorStop(1,'rgba(255,184,0,0)');g.fillStyle=gr;g.fillRect(0,0,64,64)}
+  const size=()=>{D=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;c.setTransform(D,0,0,D,0,0)};
+  let lt=0;
+  const draw=(t,dt=0)=>{t/=1000;const k=1-Math.pow(.95,dt*60);px+=(mx-px)*k;py+=(my-py)*k;const sy=(scrollY*.02)%H;c.clearRect(0,0,W,H);
+    for(const s of stars){const a=.25+.55*(.5+.5*Math.sin(t*s.s+s.p));c.globalAlpha=a*s.z;c.fillStyle='#fff';
+      const x=(s.x*W+px*s.z+W)%W,y=((s.y*H-sy*s.z+py*s.z)%H+H)%H;c.fillRect(x,y,s.r,s.r)}
+    for(const d of dust){if(!rm)d.y-=d.v*.96*dt;if(d.y<-.05){d.y=1.05;d.x=R()}
+      const k=d.r*9,x=d.x*W+Math.sin(t*.4+d.p)*18+px*d.z*1.6,y=((d.y*H-sy*d.z*1.6+py*d.z*1.6)%(H+80)+H+80)%(H+80)-40;
+      c.globalAlpha=.45+.35*Math.sin(t*1.3+d.p);c.drawImage(sp,x-k/2,y-k/2,k,k)}
+    c.globalAlpha=1};
+  const loop=t=>{const dt=lt?Math.min(.05,(t-lt)/1000):0;lt=t;draw(t,dt);raf=requestAnimationFrame(loop)};
+  const start=()=>{if(!raf&&!rm&&!document.hidden){lt=0;raf=requestAnimationFrame(loop)}},stop=()=>{cancelAnimationFrame(raf);raf=0};
+  size();addEventListener('resize',()=>{size();if(rm)draw(0)});
+  if(rm)draw(0);else{start();document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
+    if(fine)addEventListener('pointermove',e=>{mx=(e.clientX/W-.5)*-28;my=(e.clientY/H-.5)*-20},{passive:true})}
+  const io=new IntersectionObserver(en=>en.forEach(x=>x.target.classList.toggle('x-lit',x.intersectionRatio>.2)),{threshold:[0,.2,.4]});
+  document.querySelectorAll('section[id]').forEach(s=>io.observe(s));
+})();
+</script>
+</body>
+</html>
